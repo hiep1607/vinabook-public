@@ -1,0 +1,57 @@
+# ---- Dependencies (cài lại bằng npm install) ----
+node_modules/
+**/node_modules/
+
+# ---- Build output (tự sinh) ----
+dist/
+**/dist/
+tmp/
+out-tsc/
+**/target/
+*.jar
+*.war
+
+# ---- Angular / Node cache & logs ----
+.angular/
+**/.angular/
+npm-debug.log*
+yarn-error.log*
+
+# ---- IDE ----
+.idea/
+.vscode/
+.jpb/
+**/.jpb/
+*.iml
+
+# ---- IDE-generated Java metadata ----
+**/src/main/java/META-INF/MANIFEST.MF
+
+# ---- Local assistant / agent files ----
+.claude/
+**/.claude/
+.codex/
+**/.codex/
+.agents/
+**/.agents/
+**/__pycache__/
+*.pyc
+
+# ---- OS ----
+Thumbs.db
+.DS_Store
+
+# ---- Đóng gói ----
+*.zip
+
+# ---- Secret cục bộ (chỉ giữ file mẫu trong Git) ----
+.env
+.env.local
+**/.env
+**/.env.local
+!**/.env.example
+!**/.env.local.example
+
+# ---- Bản copy lồng nhau (không đưa vào repo) ----
+/book/
+
