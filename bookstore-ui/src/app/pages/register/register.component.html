@@ -1,0 +1,128 @@
+<section class="auth-page">
+
+  <div class="auth-box" appReveal="scale">
+
+    <h1 class="display-title">
+      Đăng ký
+    </h1>
+
+    <p>
+      Tạo tài khoản mới 😄
+    </p>
+
+    <form (ngSubmit)="register()" #registerForm="ngForm">
+
+    <!-- NAME -->
+
+    <div class="form-group">
+
+      <label for="register-name">Họ và tên</label>
+
+      <input
+        id="register-name"
+        name="name"
+        type="text"
+        autocomplete="name"
+        placeholder="Họ và tên"
+        [(ngModel)]="name"
+      />
+
+    </div>
+
+    <!-- EMAIL -->
+
+    <div class="form-group">
+
+      <label for="register-email">Email</label>
+
+      <input
+        id="register-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+      />
+
+    </div>
+
+    <!-- PHONE -->
+
+    <div class="form-group">
+
+      <label for="register-phone">Số điện thoại</label>
+
+      <input
+        id="register-phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
+        placeholder="Số điện thoại"
+        [(ngModel)]="phone"
+      />
+
+    </div>
+
+    <!-- PASSWORD -->
+
+    <div class="form-group">
+
+      <label for="register-password">Mật khẩu</label>
+
+      <input
+        id="register-password"
+        name="password"
+        type="password"
+        autocomplete="new-password"
+        placeholder="Mật khẩu"
+        [(ngModel)]="password"
+      />
+
+    </div>
+
+    <!-- CONFIRM PASSWORD -->
+
+    <div class="form-group">
+
+      <label for="register-confirm-password">Nhập lại mật khẩu</label>
+
+      <input
+        id="register-confirm-password"
+        name="confirmPassword"
+        type="password"
+        autocomplete="new-password"
+        placeholder="Nhập lại mật khẩu"
+        [(ngModel)]="confirmPassword"
+      />
+
+    </div>
+
+    <!-- BUTTON -->
+
+    <p *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </p>
+
+    <button
+      type="submit"
+      class="auth-btn"
+    >
+      Đăng ký
+    </button>
+    </form>
+
+    <!-- LINK -->
+
+    <div class="auth-link">
+
+      Đã có tài khoản?
+
+      <a routerLink="/login">
+        Đăng nhập
+      </a>
+
+    </div>
+
+  </div>
+
+</section>

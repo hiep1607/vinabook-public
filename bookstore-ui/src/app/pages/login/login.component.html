@@ -1,0 +1,71 @@
+<section class="auth-page">
+
+  <div class="auth-box" appReveal="scale">
+
+    <h1 class="display-title">
+      Đăng nhập
+    </h1>
+
+    <p>
+      Chào mừng quay trở lại 👋
+    </p>
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+    <div class="form-group">
+
+      <label for="login-email">Email</label>
+
+      <input
+        id="login-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="ban@email.com"
+        [(ngModel)]="email"
+        required
+      />
+
+    </div>
+
+    <div class="form-group">
+
+      <label for="login-password">Mật khẩu</label>
+
+      <input
+        id="login-password"
+        name="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Mật khẩu"
+        [(ngModel)]="password"
+        required
+      />
+
+    </div>
+
+    <p *ngIf="errorMessage" class="auth-error">
+      {{ errorMessage }}
+    </p>
+
+    <button
+      type="submit"
+      class="auth-btn"
+      [disabled]="loginForm.invalid"
+    >
+      Đăng nhập
+    </button>
+    </form>
+
+    <div class="auth-link">
+
+      Chưa có tài khoản?
+
+      <a routerLink="/register">
+        Đăng ký
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
