@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.route-curtain {
+  align-items: center;
+  background:
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--c-accent) 34%, transparent), transparent 38%),
+    var(--c-primary-deep);
+  color: #fff;
+  display: none;
+  inset: 0;
+  justify-items: center;
+  position: fixed;
+  z-index: 1200;
+}
+
+.route-curtain span {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 58px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-curtain {
+    display: none !important;
+  }
+}

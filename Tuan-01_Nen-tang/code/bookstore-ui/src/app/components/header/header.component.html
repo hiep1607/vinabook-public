@@ -1,0 +1,287 @@
+<!-- src/app/components/header/header.component.html -->
+
+<header>
+
+  <!-- TOP HEADER -->
+
+  <div class="top-header">
+
+    <div class="container">
+
+      <div class="header-wrapper">
+
+        <!-- LOGO -->
+
+        <a routerLink="/" class="logo">
+
+          <img src="assets/logo.jpg" alt="" />
+
+          <div class="logo-text">
+            <h2>VinaBook</h2>
+            <p>Sách hay cho người Việt</p>
+          </div>
+
+        </a>
+
+        <!-- SEARCH -->
+
+        <div class="search-wrapper" #searchBoxRef>
+
+          <div class="search-box">
+
+            <input
+              id="site-search"
+              type="text"
+              role="combobox"
+              aria-label="Tìm kiếm sách, tác giả hoặc thể loại"
+              aria-autocomplete="list"
+              [attr.aria-expanded]="showSuggestions"
+              aria-controls="search-suggestions"
+              placeholder="Tìm kiếm sách, tác giả, thể loại..."
+              [(ngModel)]="keyword"
+              (input)="onInput()"
+              (focus)="onFocus()"
+              (keydown.enter)="onKeydownEnter()"
+              (keydown.escape)="onKeydownEscape()"
+              autocomplete="off"
+            />
+
+            <button type="button" (click)="search()" aria-label="Tìm kiếm">
+              <lucide-icon name="search"></lucide-icon>
+            </button>
+
+          </div>
+
+          <!-- SUGGESTIONS DROPDOWN -->
+
+          <div id="search-suggestions" class="suggestions-dropdown" *ngIf="showSuggestions" role="listbox">
+
+            <!-- RECENT SEARCHES -->
+
+            <div class="dropdown-section" *ngIf="recentSearches.length > 0">
+
+              <div class="section-header">
+                <span class="section-title">
+                  <lucide-icon name="clock"></lucide-icon>
+                  Tìm kiếm gần đây
+                </span>
+                <button type="button" class="clear-all-btn" (click)="clearAllHistory($event)">
+                  Xóa tất cả
+                </button>
+              </div>
+
+              <div
+                class="history-item"
+                *ngFor="let query of recentSearches"
+                (click)="selectHistory(query)"
+                (keydown.enter)="selectHistory(query)"
+                role="option"
+                tabindex="0"
+              >
+                <span class="history-text">{{ query }}</span>
+                <button
+                  type="button"
+                  class="remove-btn"
+                  (click)="removeHistory(query, $event)"
+                  title="Xóa"
+                  aria-label="Xóa khỏi lịch sử"
+                >
+                  <lucide-icon name="x"></lucide-icon>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- DIVIDER -->
+
+            <div
+              class="dropdown-divider"
+              *ngIf="recentSearches.length > 0 && suggestions.length > 0"
+            ></div>
+
+            <!-- SUGGESTIONS -->
+
+            <div class="dropdown-section" *ngIf="suggestions.length > 0">
+
+              <div class="section-header">
+                <span class="section-title">
+                  <lucide-icon name="search"></lucide-icon>
+                  Gợi ý
+                </span>
+              </div>
+
+              <div
+                class="suggestion-item"
+                *ngFor="let item of suggestions"
+                (click)="selectSuggestion(item)"
+                (keydown.enter)="selectSuggestion(item)"
+                role="option"
+                tabindex="0"
+              >
+                <span class="suggestion-icon">
+                  <lucide-icon [name]="typeIcon(item.type)"></lucide-icon>
+                </span>
+                <span class="suggestion-label">{{ item.label }}</span>
+                <span class="suggestion-type">{{ typeLabel(item.type) }}</span>
+              </div>
+
+            </div>
+
+            <!-- EMPTY STATE (focused, no keyword, no history) -->
+
+            <div
+              class="dropdown-empty"
+              *ngIf="recentSearches.length === 0 && suggestions.length === 0"
+            >
+              Nhập từ khóa để tìm kiếm
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+
+        <div class="header-actions">
+
+          <a
+            *ngIf="!authService.isLoggedIn()"
+            routerLink="/login"
+            class="login-link"
+          >
+            Đăng nhập
+          </a>
+
+          <a
+            class="user-box"
+            routerLink="/profile"
+            *ngIf="authService.isLoggedIn()"
+          >
+            <lucide-icon name="user"></lucide-icon>
+            {{ authService.currentUser.name }}
+          </a>
+
+          <!-- WISHLIST -->
+
+          <a
+            routerLink="/wishlist"
+            class="wishlist-icon"
+            *ngIf="authService.isLoggedIn()"
+            title="Danh sách yêu thích"
+            aria-label="Danh sách yêu thích"
+          >
+            <lucide-icon name="heart"></lucide-icon>
+            <span
+              class="wishlist-badge"
+              *ngIf="wishlistService.getCount(authService.currentUser.email) > 0"
+            >
+              {{ wishlistService.getCount(authService.currentUser.email) }}
+            </span>
+          </a>
+
+          <!-- CART -->
+
+          <a routerLink="/cart" class="cart-icon" aria-label="Giỏ hàng">
+            <lucide-icon name="shopping-cart"></lucide-icon>
+            <span
+              class="cart-badge"
+              *ngIf="cartService.getCartCount() > 0"
+            >
+              {{ cartService.getCartCount() }}
+            </span>
+          </a>
+
+          <button
+            type="button"
+            class="mobile-menu-btn"
+            (click)="toggleMobileNav()"
+            [attr.aria-expanded]="showMobileNav"
+            aria-controls="primary-navigation"
+            aria-label="Mở hoặc đóng menu"
+          >
+            <lucide-icon name="menu"></lucide-icon>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- NAVBAR -->
+
+  <div id="primary-navigation" class="navbar" [class.mobile-open]="showMobileNav">
+
+    <div class="container">
+
+      <div class="navbar-wrapper">
+
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileNav()"
+        >
+          Trang chủ
+        </a>
+
+        <a
+          routerLink="/books"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileNav()"
+        >
+          Sách
+        </a>
+
+        <!-- CATEGORY DROPDOWN -->
+        <div
+          class="category-menu"
+          #categoryMenuRef
+          (mouseenter)="onCategoryHover(true)"
+          (mouseleave)="onCategoryHover(false)"
+        >
+
+          <button
+            type="button"
+            class="category-toggle"
+            (click)="toggleCategoryDropdown($event)"
+            [attr.aria-expanded]="showCategoryDropdown"
+            aria-controls="category-dropdown"
+          >
+            Thể loại
+            <lucide-icon name="chevron-down"></lucide-icon>
+          </button>
+
+          <div id="category-dropdown" class="category-dropdown" [class.open]="showCategoryDropdown">
+            <a
+              *ngFor="let cat of categories"
+              class="category-item"
+              [routerLink]="['/category', cat.categoryId]"
+              (click)="selectCategory(cat.categoryId)"
+            >
+              {{ cat.categoryName }}
+            </a>
+          </div>
+
+        </div>
+
+        <a routerLink="/books/new" routerLinkActive="active" (click)="closeMobileNav()">Sách mới</a>
+
+        <a routerLink="/books/bestseller" routerLinkActive="active" (click)="closeMobileNav()">Bestseller</a>
+
+        <a routerLink="/books/sale" routerLinkActive="active" (click)="closeMobileNav()">Khuyến mãi</a>
+
+        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileNav()">Giới thiệu</a>
+
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileNav()">Liên hệ</a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</header>

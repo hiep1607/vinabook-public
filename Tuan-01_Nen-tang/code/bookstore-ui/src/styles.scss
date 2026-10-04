@@ -1,0 +1,431 @@
+@font-face {
+  font-family: 'Vina Reader';
+  src: url('/assets/fonts/noto-serif-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* Fonts loaded via <link> in index.html (Be Vietnam Pro + Playfair Display) */
+
+/* =========================
+   DESIGN TOKENS — modern editorial commerce
+   Deep forest follows the existing logo; burnt orange is the only accent.
+========================= */
+:root {
+  --c-primary: #123f32;
+  --c-primary-hover: #0d3328;
+  --c-primary-deep: #071f19;
+  --c-accent: #b9471d;
+  --c-accent-hover: #9f3815;
+  --c-accent-soft: #fff3ed;
+  --c-stone: #64706b;
+
+  --c-bg: #f6f8f7;
+  --c-surface: #ffffff;
+  --c-fg: #15221d;
+  --c-muted-fg: #66736d;
+  --c-muted: #edf1ef;
+  --c-border: #dfe6e2;
+  --c-danger: #dc2626;
+  --page-bg:
+    radial-gradient(circle at 8% 0%, rgba(185, 71, 29, 0.05), transparent 28rem),
+    #f6f8f7;
+
+  --font-heading: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --font-body: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  /* Book retail is an editorial context, so a restrained serif is appropriate for display titles. */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 2px 8px rgba(18, 63, 50, 0.06);
+  --shadow-md: 0 12px 30px rgba(18, 63, 50, 0.09);
+  --shadow-lg: 0 24px 64px rgba(18, 63, 50, 0.13);
+
+  --container-max: 1280px;
+  --duration-fast: 160ms;
+  --duration-base: 280ms;
+  --duration-slow: 560ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme='ocean'] {
+  --c-primary: #155e75;
+  --c-primary-hover: #164e63;
+  --c-primary-deep: #083344;
+  --c-accent: #0e7490;
+  --c-accent-hover: #155e75;
+  --c-accent-soft: #ecfeff;
+  --c-stone: #64748b;
+  --c-bg: #f8fafc;
+  --c-surface: #ffffff;
+  --c-fg: #0f172a;
+  --c-muted-fg: #64748b;
+  --c-muted: #f1f5f9;
+  --c-border: #e2e8f0;
+  --font-display: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --shadow-sm: 0 2px 10px rgba(8, 51, 68, 0.05);
+  --shadow-md: 0 16px 38px rgba(8, 51, 68, 0.09);
+  --shadow-lg: 0 28px 72px rgba(8, 51, 68, 0.13);
+  --page-bg:
+    radial-gradient(circle at 92% 0%, rgba(14, 116, 144, 0.09), transparent 34rem),
+    #f8fafc;
+}
+
+html[data-theme='forest'] {
+  --c-primary: #166534;
+  --c-primary-hover: #14532d;
+  --c-primary-deep: #052e16;
+  --c-accent: #a16207;
+  --c-accent-hover: #854d0e;
+  --c-accent-soft: #fefce8;
+  --c-stone: #6b7280;
+  --c-bg: #f7f8f5;
+  --c-surface: #ffffff;
+  --c-fg: #14181a;
+  --c-muted-fg: #6b7280;
+  --c-muted: #f3f4f6;
+  --c-border: #e5e7eb;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --shadow-sm: 0 2px 8px rgba(5, 46, 22, 0.06);
+  --shadow-md: 0 14px 34px rgba(5, 46, 22, 0.1);
+  --shadow-lg: 0 28px 68px rgba(5, 46, 22, 0.15);
+  --page-bg:
+    linear-gradient(rgba(22, 101, 52, 0.025) 1px, transparent 1px),
+    #f7f8f5;
+  --page-bg-size: 100% 32px;
+}
+
+html[data-theme='berry'] {
+  --c-primary: #831843;
+  --c-primary-hover: #9d174d;
+  --c-primary-deep: #500724;
+  --c-accent: #e11d48;
+  --c-accent-hover: #be123c;
+  --c-accent-soft: #fff1f2;
+  --c-stone: #6b7280;
+  --c-bg: #fdfafb;
+  --c-surface: #ffffff;
+  --c-fg: #1c1917;
+  --c-muted-fg: #6b7280;
+  --c-muted: #f6f3f4;
+  --c-border: #ece7e9;
+  --font-display: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --radius-sm: 14px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --shadow-sm: 0 3px 12px rgba(80, 7, 36, 0.06);
+  --shadow-md: 0 16px 40px rgba(80, 7, 36, 0.1);
+  --shadow-lg: 0 30px 76px rgba(80, 7, 36, 0.15);
+  --page-bg:
+    radial-gradient(circle at 8% 4%, rgba(225, 29, 72, 0.08), transparent 28rem),
+    #fdfafb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: var(--font-body);
+  background: var(--page-bg, var(--c-bg));
+  background-size: var(--page-bg-size, auto);
+  color: var(--c-fg);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+}
+
+h1, h2, h3, h4, h5, h6,
+.section-title {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+body {
+  overflow-x: clip;
+  line-height: 1.6;
+  min-width: 320px;
+}
+
+/* Guard chống tràn ngang trên mobile — 'clip' không tạo scroll container nên
+   không phá position: sticky của header (khác với overflow:hidden). */
+html {
+  overflow-x: clip;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  width: 100%;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active,
+a:active {
+  transform: translateY(1px);
+}
+
+::selection {
+  background: var(--c-accent-soft);
+  color: var(--c-primary-deep);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(185, 71, 29, 0.36);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.section {
+  margin-top: 88px;
+}
+
+/* Minimal section header: small overline + large title */
+.section-title {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 700;
+  color: var(--c-fg);
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.section-head .overline {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  margin-bottom: 8px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(185, 71, 29, 0.36);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .section {
+    margin-top: 56px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+}
+
+/* =========================
+   SKELETON LOADING
+   (dùng chung: home / books / search / category)
+========================= */
+
+.skeleton-row {
+  display: flex;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.skeleton-card {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+/* Trong grid (books/search/category) thẻ skeleton co giãn theo cột */
+.products-grid .skeleton-card,
+.search-grid .skeleton-card {
+  width: auto;
+}
+
+.skeleton-box {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--c-muted) 25%, var(--c-border) 37%, var(--c-muted) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-cover {
+  height: 280px;
+}
+
+.skeleton-line {
+  height: 16px;
+  margin-top: 14px;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* =========================
+   API ERROR PANEL
+========================= */
+
+.load-error {
+  text-align: center;
+  padding: 48px 24px;
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--c-border);
+  color: var(--c-muted-fg);
+}
+
+.load-error p {
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.retry-btn {
+  height: 44px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 10px;
+  background: var(--c-primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.retry-btn:hover {
+  background: var(--c-primary-hover);
+}
+
+/* =========================
+   SCROLL REVEAL  (directive appReveal)
+   Phần tử ẩn nhẹ + dịch chuyển, hiện ra mượt khi lọt vào khung nhìn.
+========================= */
+
+/* =========================
+   DISPLAY TITLE — serif sang trọng
+========================= */
+
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+}
+
+/* A short route enter communicates that navigation completed without delaying input. */
+.route-stage {
+  display: block;
+  min-height: 45vh;
+}
+
+.route-stage > router-outlet + * { display: block; }
+
+/* Người dùng tắt chuyển động: hiện ngay, không animate (tránh kẹt opacity:0) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  .route-stage > router-outlet + * { animation: none !important; }
+}
+
+/* Sticky buy bar trang chi tiết sách (mobile): chừa khoảng đáy để bar không đè footer. */
+@media (max-width: 768px) {
+  body.has-sticky-buy-bar {
+    padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Reader là một không gian tập trung: không để bất kỳ nút nổi nào che lên trang sách. */
+body.preview-reader-open app-chatbot,
+body.preview-reader-open app-theme-switcher {
+  display: none !important;
+}
+
+@import 'styles/vinabook-night';

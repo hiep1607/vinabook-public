@@ -1,0 +1,89 @@
+<div class="contact-page">
+  <section class="hero">
+    <div class="container">
+      <h1 class="display-title" appReveal="up">Liên hệ với chúng tôi</h1>
+      <p class="tagline" appReveal="up" [revealDelay]="120">VinaBook luôn sẵn sàng lắng nghe bạn đọc</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="contact-grid">
+      <div class="info-panel" appReveal="left">
+        <h2>Hỗ trợ trực tuyến</h2>
+
+        <div class="info-item">
+          <span class="icon" aria-hidden="true">@</span>
+          <div>
+            <strong>Email</strong>
+            <p><a href="mailto:hotro@vinabook.vn">hotro&#64;vinabook.vn</a></p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="icon" aria-hidden="true">?</span>
+          <div>
+            <strong>Tra cứu đơn hàng</strong>
+            <p>Đăng nhập và mở mục Đơn hàng của tôi để xem trạng thái mới nhất.</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="icon" aria-hidden="true">24h</span>
+          <div>
+            <strong>Thời gian phản hồi</strong>
+            <p>Yêu cầu được tiếp nhận qua email và phản hồi trong giờ làm việc.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-panel" appReveal="right">
+        <h2>Soạn lời nhắn</h2>
+        <p class="form-note">Biểu mẫu sẽ mở ứng dụng email trên thiết bị của bạn. Nội dung chỉ được gửi sau khi bạn xác nhận trong ứng dụng email.</p>
+
+        <form (ngSubmit)="submit()">
+          <div class="field">
+            <label for="contact-name">Họ và tên *</label>
+            <input id="contact-name" type="text" [(ngModel)]="form.name" name="name" autocomplete="name" [class.invalid]="submitted && !form.name.trim()" />
+          </div>
+
+          <div class="field">
+            <label for="contact-email">Email *</label>
+            <input id="contact-email" type="email" [(ngModel)]="form.email" name="email" autocomplete="email" [class.invalid]="submitted && !form.email.trim()" />
+          </div>
+
+          <div class="field">
+            <label for="contact-subject">Tiêu đề</label>
+            <input id="contact-subject" type="text" [(ngModel)]="form.subject" name="subject" />
+          </div>
+
+          <div class="field">
+            <label for="contact-message">Nội dung *</label>
+            <textarea id="contact-message" rows="5" [(ngModel)]="form.message" name="message" [class.invalid]="submitted && !form.message.trim()"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">Mở ứng dụng email</button>
+        </form>
+      </div>
+    </div>
+
+    <section class="faq-section">
+      <h2 class="display-title" appReveal="up">Câu hỏi thường gặp</h2>
+
+      <div class="faq-list">
+        <div class="faq-item" *ngFor="let faq of faqs; let i = index" appReveal="up" [revealDelay]="i * 70" [class.open]="faq.open">
+          <button
+            type="button"
+            class="faq-question"
+            (click)="toggleFaq(faq)"
+            [attr.aria-expanded]="faq.open"
+            [attr.aria-controls]="'faq-answer-' + i"
+          >
+            {{ faq.q }}
+            <span class="chevron" aria-hidden="true">{{ faq.open ? '−' : '+' }}</span>
+          </button>
+          <div class="faq-answer" *ngIf="faq.open" [id]="'faq-answer-' + i">{{ faq.a }}</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

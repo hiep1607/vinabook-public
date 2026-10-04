@@ -1,0 +1,37 @@
+<div #themeWash class="theme-wash" aria-hidden="true"></div>
+
+<div #themePanel class="theme-panel" *ngIf="open" role="dialog" aria-label="Chọn phong cách giao diện">
+  <div class="theme-panel-head">
+    <strong>Phong cách</strong>
+    <button type="button" class="theme-close" (click)="toggle()" aria-label="Đóng">
+      <lucide-icon name="x"></lucide-icon>
+    </button>
+  </div>
+
+  <button
+    type="button"
+    class="theme-option"
+    *ngFor="let theme of themes"
+    [class.active]="themeService.current === theme.id"
+    (click)="pick(theme)"
+  >
+    <span class="theme-swatch" [style.background]="theme.bg" aria-hidden="true">
+      <span class="dot" [style.background]="theme.primary"></span>
+      <span class="dot" [style.background]="theme.accent"></span>
+    </span>
+    <span class="theme-name">{{ theme.name }}</span>
+    <span class="theme-check" *ngIf="themeService.current === theme.id" aria-hidden="true">✓</span>
+  </button>
+</div>
+
+<button
+  type="button"
+  class="theme-fab"
+  #themeFabBtn
+  [class.active]="open"
+  (click)="toggle()"
+  [attr.aria-expanded]="open"
+  [attr.aria-label]="open ? 'Đóng bộ chọn phong cách' : 'Đổi phong cách'"
+>
+  <lucide-icon name="palette"></lucide-icon>
+</button>

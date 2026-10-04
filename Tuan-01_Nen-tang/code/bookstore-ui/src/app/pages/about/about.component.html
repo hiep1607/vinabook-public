@@ -1,0 +1,130 @@
+<div class="about-page">
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="container">
+
+      <h1 class="display-title" appReveal="up">Về VinaBook</h1>
+
+      <p class="tagline" appReveal="up" [revealDelay]="120">Sách hay cho người Việt</p>
+
+    </div>
+
+  </section>
+
+  <!-- GIỚI THIỆU -->
+
+  <section class="section">
+
+    <div class="container narrow">
+
+      <h2 class="display-title" appReveal="up">Chúng tôi là ai?</h2>
+
+      <p appReveal="up" [revealDelay]="100">
+        <strong>VinaBook</strong> là nhà sách trực tuyến dành cho bạn đọc Việt Nam,
+        nơi bạn tìm thấy từ những kiệt tác văn học kinh điển, sách kinh tế và công nghệ
+        cập nhật, giáo trình đại học cho đến truyện tranh thiếu nhi. Mỗi đầu sách
+        trên kệ đều được chúng tôi tuyển chọn kỹ lưỡng từ các nhà xuất bản uy tín.
+      </p>
+
+      <p>
+        Chúng tôi tin rằng một cuốn sách đúng lúc có thể thay đổi một con người.
+        và sứ mệnh của VinaBook là đưa cuốn sách ấy đến tay bạn nhanh nhất,
+        với mức giá tốt nhất.
+      </p>
+
+    </div>
+
+  </section>
+
+  <!-- SỨ MỆNH / TẦM NHÌN -->
+
+  <section class="section alt">
+
+    <div class="container">
+
+      <div class="mission-grid">
+
+        <div class="mission-card" appReveal="left">
+          <div class="icon">🎯</div>
+          <h3>Sứ mệnh</h3>
+          <p>
+            Lan tỏa văn hóa đọc đến mọi miền đất nước để mọi người Việt,
+            ở bất cứ đâu, đều mua được sách hay với giá hợp lý chỉ trong vài cú nhấp chuột.
+          </p>
+        </div>
+
+        <div class="mission-card" appReveal="right">
+          <div class="icon">🔭</div>
+          <h3>Tầm nhìn</h3>
+          <p>
+            Trở thành nhà sách trực tuyến được yêu thích nhất Việt Nam,
+            điểm đến đầu tiên khi bạn đọc nghĩ đến việc tìm mua một cuốn sách.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- VÌ SAO CHỌN CHÚNG TÔI -->
+
+  <section class="section">
+
+    <div class="container">
+
+      <h2 class="center display-title" appReveal="up">Vì sao chọn VinaBook?</h2>
+
+      <div class="reasons-grid">
+
+        <div class="reason-card" *ngFor="let r of reasons; let i = index" appReveal="up" [revealDelay]="i * 100">
+          <div class="icon">{{ r.icon }}</div>
+          <h3>{{ r.title }}</h3>
+          <p>{{ r.text }}</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- THỐNG KÊ -->
+
+  <section class="section stats">
+
+    <div class="container">
+
+      <div class="stats-grid">
+
+        <div class="stat" appReveal="up" [revealDelay]="0">
+          <div class="stat-number" [appCountUp]="bookCount" suffix="+"></div>
+          <div class="stat-label">Đầu sách</div>
+        </div>
+
+        <div class="stat" appReveal="up" [revealDelay]="120">
+          <div class="stat-number" [appCountUp]="categoryCount"></div>
+          <div class="stat-label">Thể loại</div>
+        </div>
+
+        <div class="stat" appReveal="up" [revealDelay]="240">
+          <div class="stat-number">2-4</div>
+          <div class="stat-label">Ngày giao hàng dự kiến</div>
+        </div>
+
+        <div class="stat" appReveal="up" [revealDelay]="360">
+          <div class="stat-number">300K</div>
+          <div class="stat-label">Miễn phí vận chuyển từ</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

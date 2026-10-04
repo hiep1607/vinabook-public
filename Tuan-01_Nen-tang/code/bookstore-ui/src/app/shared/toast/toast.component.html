@@ -1,0 +1,19 @@
+<div
+  class="toast"
+  [class.error]="notification.type === 'error'"
+  [class.info]="notification.type === 'info'"
+  *ngIf="notification.visible"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+>
+
+  <span class="icon">
+    {{ notification.type === 'success' ? '✓' : notification.type === 'error' ? '!' : 'i' }}
+  </span>
+
+  <span>
+    {{ notification.message }}
+  </span>
+
+</div>

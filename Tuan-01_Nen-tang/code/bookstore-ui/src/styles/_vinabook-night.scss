@@ -1,0 +1,488 @@
+/* Forest-night presentation inspired by the approved VinaBook 3D concept. */
+:root,
+html[data-theme='editorial'] {
+  --c-primary: #0f6b45;
+  --c-primary-hover: #16875a;
+  --c-primary-deep: #02150e;
+  --c-accent: #e0ac3b;
+  --c-accent-hover: #f0c35d;
+  --c-accent-soft: #2d2a16;
+  --c-stone: #7f9187;
+  --c-bg: #031a12;
+  --c-surface: #08241a;
+  --c-fg: #f2f4e9;
+  --c-muted-fg: #a9b8ad;
+  --c-muted: #0b2e22;
+  --c-border: rgba(222, 235, 220, 0.15);
+  --c-on-accent: #082117;
+  --page-bg:
+    radial-gradient(circle at 82% 4%, rgba(224, 172, 59, 0.08), transparent 30rem),
+    radial-gradient(circle at 12% 22%, rgba(20, 126, 82, 0.14), transparent 34rem),
+    #031a12;
+  --shadow-sm: 0 4px 16px rgba(0, 10, 7, 0.22);
+  --shadow-md: 0 18px 42px rgba(0, 10, 7, 0.34);
+  --shadow-lg: 0 30px 80px rgba(0, 8, 5, 0.48);
+}
+
+html[data-theme='editorial'] body {
+  background-attachment: fixed;
+}
+
+html[data-theme='editorial'] ::selection {
+  background: var(--c-accent);
+  color: var(--c-primary-deep);
+}
+
+/* Header: one compact translucent band, consistent with the reference. */
+html[data-theme='editorial'] app-header .top-header,
+html[data-theme='editorial'] app-header .navbar {
+  border-color: rgba(232, 239, 225, 0.11);
+  background: rgba(3, 26, 18, 0.88);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.025);
+}
+
+html[data-theme='editorial'] app-header .search-box {
+  border-color: rgba(232, 239, 225, 0.13);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+html[data-theme='editorial'] app-header .search-box:focus-within {
+  border-color: rgba(224, 172, 59, 0.54);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px rgba(224, 172, 59, 0.09);
+}
+
+html[data-theme='editorial'] app-header .search-box button {
+  background: rgba(16, 105, 70, 0.88);
+}
+
+html[data-theme='editorial'] app-header .header-actions a.login-link {
+  background: var(--c-primary);
+}
+
+html[data-theme='editorial'] app-header .navbar-wrapper a,
+html[data-theme='editorial'] app-header .category-toggle {
+  color: #b9c8bd;
+}
+
+html[data-theme='editorial'] app-header .navbar-wrapper a:hover,
+html[data-theme='editorial'] app-header .navbar-wrapper a.active,
+html[data-theme='editorial'] app-header .category-toggle:hover {
+  color: var(--c-fg);
+}
+
+html[data-theme='editorial'] app-header .navbar-wrapper a::after,
+html[data-theme='editorial'] app-header .category-toggle::after {
+  background: var(--c-accent);
+}
+
+/* Home hero: deep forest stage with a restrained amber spotlight. */
+html[data-theme='editorial'] app-home .hero {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  background:
+    radial-gradient(ellipse at 72% 72%, rgba(224, 172, 59, 0.18), transparent 19%),
+    radial-gradient(circle at 86% 10%, rgba(28, 126, 83, 0.34), transparent 32%),
+    linear-gradient(118deg, #02150e 0%, #043222 58%, #06251b 100%);
+  box-shadow: inset 0 -1px 0 rgba(224, 172, 59, 0.14), var(--shadow-lg);
+}
+
+html[data-theme='editorial'] app-home .hero::after {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+  background-size: 42px 42px;
+  content: '';
+  pointer-events: none;
+  mask-image: linear-gradient(to right, transparent, #000 45%, #000);
+}
+
+html[data-theme='editorial'] app-home .hero-glow {
+  right: 8%;
+  top: 8%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(224, 172, 59, 0.14), transparent 69%);
+}
+
+html[data-theme='editorial'] app-home .hero-inner {
+  min-height: min(510px, calc(100dvh - 118px));
+  padding-top: 46px;
+  padding-bottom: 54px;
+}
+
+html[data-theme='editorial'] app-home .hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+html[data-theme='editorial'] app-home .hero-title {
+  max-width: 10ch;
+  font-size: clamp(46px, 5vw, 66px);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+html[data-theme='editorial'] app-home .hero-eyebrow {
+  color: var(--c-accent);
+}
+
+html[data-theme='editorial'] app-home .btn-primary {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  box-shadow: 0 12px 28px rgba(224, 172, 59, 0.2);
+}
+
+html[data-theme='editorial'] app-home .btn-primary:hover {
+  background: var(--c-accent-hover);
+  box-shadow: 0 16px 34px rgba(224, 172, 59, 0.28);
+}
+
+html[data-theme='editorial'] app-home .hero-stage {
+  position: relative;
+  z-index: 2;
+  align-items: flex-end;
+  min-height: 430px;
+  perspective: 1200px;
+}
+
+html[data-theme='editorial'] app-home .hero-stage::before,
+html[data-theme='editorial'] app-home .hero-stage::after {
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+html[data-theme='editorial'] app-home .hero-stage::before {
+  bottom: 35px;
+  width: min(92%, 420px);
+  height: 70px;
+  border: 1px solid rgba(224, 172, 59, 0.42);
+  background: linear-gradient(180deg, #167452 0%, #073b29 42%, #021b12 100%);
+  box-shadow:
+    inset 0 8px 14px rgba(119, 235, 174, 0.15),
+    0 0 34px rgba(224, 172, 59, 0.16),
+    0 26px 42px rgba(0, 8, 5, 0.45);
+}
+
+html[data-theme='editorial'] app-home .hero-stage::after {
+  bottom: 82px;
+  width: min(76%, 330px);
+  height: 25px;
+  background: radial-gradient(ellipse, rgba(255, 220, 125, 0.44), rgba(224, 172, 59, 0.08) 56%, transparent 72%);
+  filter: blur(2px);
+}
+
+html[data-theme='editorial'] app-home .hero-deck {
+  z-index: 1;
+  height: 410px;
+}
+
+html[data-theme='editorial'] app-home .deck-cover {
+  height: 350px;
+  border: 1px solid rgba(255, 235, 177, 0.24);
+  box-shadow: 0 28px 52px rgba(0, 8, 5, 0.58);
+  transform:
+    translateX(calc(var(--pos) * 34px))
+    translateY(calc(var(--pos) * 17px))
+    rotate(calc(var(--pos) * 2.4deg))
+    scale(calc(1 - var(--pos) * 0.085));
+}
+
+/* Compact service strip from the reference, without extra introductory panel. */
+html[data-theme='editorial'] app-home .why {
+  margin-top: 24px;
+}
+
+html[data-theme='editorial'] app-home .why-shell {
+  display: block;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme='editorial'] app-home .why-intro {
+  display: none;
+}
+
+html[data-theme='editorial'] app-home .why-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+html[data-theme='editorial'] app-home .why-card {
+  min-height: 126px;
+  gap: 13px;
+  padding: 22px 18px;
+  border: 1px solid rgba(229, 238, 226, 0.14) !important;
+  border-radius: var(--radius-md);
+  background: rgba(11, 48, 35, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(12px);
+}
+
+html[data-theme='editorial'] app-home .why-card:hover {
+  background: rgba(15, 75, 51, 0.78);
+}
+
+html[data-theme='editorial'] app-home .why-card lucide-icon {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(224, 172, 59, 0.26);
+  background: rgba(224, 172, 59, 0.1);
+  color: var(--c-accent);
+}
+
+html[data-theme='editorial'] app-home .why-card h3 {
+  font-size: 14px;
+}
+
+html[data-theme='editorial'] app-home .why-card p {
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+/* Product shelves: dark glass frame and an illuminated display plinth. */
+html[data-theme='editorial'] app-product-card .product-card {
+  border-color: rgba(229, 238, 226, 0.16);
+  background: linear-gradient(180deg, rgba(13, 52, 38, 0.9), rgba(5, 31, 22, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+html[data-theme='editorial'] app-product-card .product-card:hover {
+  border-color: rgba(224, 172, 59, 0.4);
+  box-shadow: 0 18px 40px rgba(0, 8, 5, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme='editorial'] app-product-card .product-image {
+  background:
+    radial-gradient(ellipse at 50% 84%, rgba(224, 172, 59, 0.25), transparent 31%),
+    radial-gradient(circle at 50% 18%, rgba(37, 132, 88, 0.2), transparent 55%),
+    rgba(2, 24, 16, 0.74);
+}
+
+html[data-theme='editorial'] app-product-card .product-image::before,
+html[data-theme='editorial'] app-product-card .product-image::after {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+html[data-theme='editorial'] app-product-card .product-image::before {
+  bottom: 13px;
+  width: 82%;
+  height: 25px;
+  border: 1px solid rgba(224, 172, 59, 0.34);
+  background: linear-gradient(180deg, #167250, #042d20 70%);
+  box-shadow: 0 9px 16px rgba(0, 7, 5, 0.46);
+}
+
+html[data-theme='editorial'] app-product-card .product-image::after {
+  bottom: 31px;
+  width: 64%;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(255, 220, 127, 0.45), transparent 72%);
+  filter: blur(2px);
+}
+
+html[data-theme='editorial'] app-product-card .product-image img {
+  position: relative;
+  z-index: 2;
+  padding: 14px 18px 34px;
+  filter: drop-shadow(0 16px 15px rgba(0, 7, 4, 0.4));
+}
+
+html[data-theme='editorial'] app-product-card .wishlist-btn {
+  border-color: rgba(234, 240, 230, 0.18);
+  background: rgba(3, 27, 18, 0.76);
+  color: #c2cec5;
+}
+
+html[data-theme='editorial'] app-product-card .discount-badge {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+
+html[data-theme='editorial'] app-home .section-header > a,
+html[data-theme='editorial'] app-home .recent-clear-btn {
+  color: #c9d4cc;
+}
+
+html[data-theme='editorial'] app-home .product-arrow {
+  border-color: rgba(231, 238, 228, 0.2);
+  background: rgba(4, 31, 21, 0.86);
+  color: var(--c-fg);
+}
+
+html[data-theme='editorial'] app-home .stats-grid,
+html[data-theme='editorial'] app-home .cta-inner {
+  border: 1px solid rgba(224, 172, 59, 0.16);
+  background:
+    radial-gradient(circle at 82% 0%, rgba(224, 172, 59, 0.12), transparent 30%),
+    linear-gradient(135deg, #073e2b, #02170f);
+}
+
+/* Product detail: large 3D stage on the left, clean conversion rail on the right. */
+html[data-theme='editorial'] app-product-detail .detail-page {
+  background:
+    radial-gradient(circle at 28% 27%, rgba(18, 111, 73, 0.17), transparent 31rem),
+    radial-gradient(circle at 72% 18%, rgba(224, 172, 59, 0.05), transparent 24rem);
+}
+
+html[data-theme='editorial'] app-product-detail .detail-wrapper {
+  grid-template-columns: minmax(500px, 1.3fr) minmax(330px, 0.7fr);
+  gap: clamp(28px, 3.4vw, 52px);
+}
+
+html[data-theme='editorial'] app-product-detail .detail-image {
+  border-color: rgba(224, 172, 59, 0.3);
+  background:
+    radial-gradient(ellipse at 50% 82%, rgba(224, 172, 59, 0.2), transparent 28%),
+    radial-gradient(circle at 50% 30%, rgba(30, 137, 91, 0.18), transparent 52%),
+    rgba(2, 24, 16, 0.76);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 26px 64px rgba(0, 8, 5, 0.34);
+}
+
+html[data-theme='editorial'] app-product-detail .detail-info h1 {
+  max-width: 15ch;
+  color: var(--c-fg);
+}
+
+html[data-theme='editorial'] app-product-detail .detail-badge {
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+}
+
+html[data-theme='editorial'] app-product-detail .purchase-box {
+  border-color: rgba(228, 237, 224, 0.14);
+}
+
+html[data-theme='editorial'] app-product-detail .qty-stepper {
+  border-color: rgba(229, 238, 226, 0.18);
+}
+
+html[data-theme='editorial'] app-product-detail .qty-stepper button {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+html[data-theme='editorial'] app-product-detail .actions {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+html[data-theme='editorial'] app-product-detail .buy-btn,
+html[data-theme='editorial'] app-product-detail .cart-btn,
+html[data-theme='editorial'] app-product-detail .actions > .wishlist-btn {
+  width: 100%;
+}
+
+html[data-theme='editorial'] app-product-detail .buy-btn {
+  background: linear-gradient(135deg, #168b58, #0d6c44);
+  color: #f4f8f2;
+  box-shadow: 0 12px 26px rgba(4, 92, 57, 0.28);
+}
+
+html[data-theme='editorial'] app-product-detail .cart-btn {
+  border: 1px solid rgba(245, 241, 220, 0.7);
+  background: #eff0e7;
+  color: #092218;
+}
+
+html[data-theme='editorial'] app-product-detail .actions > .wishlist-btn {
+  border-color: rgba(230, 238, 226, 0.2);
+  background: rgba(255, 255, 255, 0.045);
+  color: #d5ddd6;
+}
+
+html[data-theme='editorial'] app-product-detail .related-section,
+html[data-theme='editorial'] app-product-detail .review-section {
+  background: transparent;
+}
+
+html[data-theme='editorial'] app-product-detail .review-compose,
+html[data-theme='editorial'] app-product-detail .login-prompt,
+html[data-theme='editorial'] app-product-detail .review-list {
+  background: rgba(8, 36, 26, 0.84);
+}
+
+html[data-theme='editorial'] app-book-3d-viewer .viewer-toolbar > span,
+html[data-theme='editorial'] app-book-3d-viewer .viewer-toolbar button,
+html[data-theme='editorial'] app-book-3d-viewer .fallback-label {
+  border-color: rgba(238, 241, 223, 0.2);
+  background: rgba(3, 24, 16, 0.72);
+  color: #e6ece5;
+}
+
+html[data-theme='editorial'] app-footer .footer {
+  border-color: rgba(229, 237, 226, 0.12);
+  background: #02140d;
+}
+
+@media (max-width: 992px) {
+  html[data-theme='editorial'] app-home .why-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html[data-theme='editorial'] app-product-detail .detail-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme='editorial'] app-product-detail .actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  html[data-theme='editorial'] app-product-detail .actions > .wishlist-btn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 576px) {
+  html[data-theme='editorial'] app-home .hero-inner {
+    min-height: 0;
+  }
+
+  html[data-theme='editorial'] app-home .hero-stage {
+    min-height: 320px;
+  }
+
+  html[data-theme='editorial'] app-home .hero-stage::before {
+    bottom: 22px;
+    height: 52px;
+  }
+
+  html[data-theme='editorial'] app-home .hero-stage::after {
+    bottom: 58px;
+  }
+
+  html[data-theme='editorial'] app-home .why-grid {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme='editorial'] app-product-detail .actions {
+    grid-template-columns: 1fr;
+  }
+
+  html[data-theme='editorial'] app-product-detail .actions > .wishlist-btn {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html[data-theme='editorial'] app-header .top-header,
+  html[data-theme='editorial'] app-header .navbar,
+  html[data-theme='editorial'] app-home .why-card {
+    backdrop-filter: none;
+    background: var(--c-surface);
+  }
+}
