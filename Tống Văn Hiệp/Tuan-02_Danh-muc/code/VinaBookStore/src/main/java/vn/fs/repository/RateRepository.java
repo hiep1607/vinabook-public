@@ -1,0 +1,29 @@
+/*
+ * (C) Copyright 2022. All Rights Reserved.
+ *
+ * @author DongTHD
+ * @date Mar 10, 2022
+*/
+package vn.fs.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import vn.fs.entity.OrderDetail;
+import vn.fs.entity.Product;
+import vn.fs.entity.Rate;
+
+@Repository
+public interface RateRepository extends JpaRepository<Rate, Long> {
+	@org.springframework.data.jpa.repository.Query("select r.product.productId, avg(r.rating) from Rate r where r.rating between 0 and 5 group by r.product.productId")
+	List<Object[]> averageRatings();
+
+	List<Rate> findAllByOrderByIdDesc();
+
+	Rate findByOrderDetail(OrderDetail orderDetail);
+
+	List<Rate> findByProductOrderByIdDesc(Product product);
+
+}
