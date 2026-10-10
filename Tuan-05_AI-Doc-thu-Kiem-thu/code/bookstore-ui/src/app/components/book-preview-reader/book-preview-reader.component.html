@@ -1,0 +1,48 @@
+<dialog #dialog class="reader" tabindex="-1" [attr.aria-label]="'Đọc thử ' + product.name" (cancel)="cancel($event)" (keydown)="key($event)">
+  <header>
+    <div class="book-title"><h2>{{ product.name }}</h2><span>{{ product.author }}</span></div>
+    <div class="header-actions">
+      <span class="page-count" *ngIf="count" aria-live="polite">{{ pageLabel }}</span>
+      <button type="button" *ngIf="count" class="settings-toggle" aria-label="Tùy chọn đọc"
+        [attr.aria-expanded]="toolsOpen" aria-controls="reader-tools" (click)="toolsOpen = !toolsOpen">Aa</button>
+    <button type="button" class="exit" autofocus aria-label="Thoát đọc thử" (click)="close()">×</button>
+  </div>
+  </header>
+  <div class="reading-area">
+    <div #canvasHost class="book-scene" [class.hidden]="mode2d || !count" aria-label="Sách 3D, kéo mép trang để lật"></div>
+    <div class="message" *ngIf="loading" role="status">Đang tải bản đọc thử…</div>
+    <div class="message" *ngIf="!loading && !count" role="status">
+      <p>{{ loadError ? 'Không tải được bản đọc thử.' : 'Chưa có nội dung đọc thử' }}</p>
+      <button *ngIf="loadError" type="button" (click)="load()">Thử lại</button>
+    </div>
+    <div class="reading-2d" *ngIf="mode2d && page">
+      <p class="fallback-note" *ngIf="fallback">Không thể hiển thị 3D. Bạn vẫn có thể đọc nội dung bên dưới.</p>
+      <article [style.width.%]="100 * textZoom" [style.font-size.px]="textSize * textZoom" [style.font-family]="textFamily" [style.text-align]="textAlign">
+        <ng-container *ngIf="page.kind === 'image'; else textPage">
+          <img *ngIf="!imageFailed" [src]="imageUrl" [alt]="'Ảnh trang đọc thử ' + (page?.printedNumber || textIndex + 1)"
+            (error)="imageFailed = true" draggable="false">
+          <p *ngIf="imageFailed">Không tải được trang này. <button type="button" (click)="retryPages()">Thử lại</button></p>
+        </ng-container>
+        <ng-template #textPage><h3>{{ heading }}</h3><p class="real-text">{{ text }}</p></ng-template>
+      </article>
+    </div>
+  </div>
+  <ng-container *ngIf="count">
+    <button type="button" class="page-turn previous" aria-label="Trang trước" [disabled]="!canPrevious" (click)="step(-1)">‹</button>
+    <button type="button" class="page-turn next" aria-label="Trang sau" [disabled]="!canNext" (click)="step(1)">›</button>
+    <button type="button" class="open-cover" *ngIf="!mode2d && snapshot.state === 'closed'" (click)="toggleCover()">Mở sách</button>
+  </ng-container>
+  <footer *ngIf="count && toolsOpen" id="reader-tools">
+    <div class="tools" aria-label="Điều khiển đọc sách">
+      <button type="button" [disabled]="loading || busy || mode2d" (click)="toggleCover()">{{ snapshot.state === 'closed' ? 'Mở bìa sách' : 'Đóng bìa sách' }}</button>
+      <button type="button" [disabled]="loading || mode2d" (click)="top()">Góc từ trên</button>
+      <button type="button" aria-label="Thu nhỏ" [disabled]="loading" (click)="zoom(-.2)">−</button>
+      <button type="button" aria-label="Phóng to" [disabled]="loading" (click)="zoom(.2)">+</button>
+      <button type="button" [disabled]="loading" (click)="reset()">Đặt lại góc nhìn</button>
+      <button type="button" [attr.aria-pressed]="mode2d" [disabled]="loading || (!mode2d && busy)" (click)="toggle2d()">{{ mode2d && !fallback ? 'Trở về 3D' : 'Đọc chữ lớn' }}</button>
+      <button type="button" [attr.aria-pressed]="sound" [disabled]="fallback" (click)="toggleSound()">{{ sound ? 'Tắt tiếng giấy' : 'Bật tiếng giấy' }}</button>
+      <button type="button" [disabled]="loading" (click)="retryPages()">Tải lại trang</button>
+    </div>
+    <small class="hint">{{ mode2d ? 'Phóng to và cuộn để đọc nội dung trang.' : 'Kéo mép trang để lật · Kéo nền để xoay · Chụm hai ngón để zoom' }}</small>
+  </footer>
+</dialog>

@@ -1,0 +1,276 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.viewer-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  isolation: isolate;
+  user-select: none;
+  touch-action: none;
+}
+
+.canvas-host {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  opacity: 1;
+  transition: opacity 220ms var(--ease);
+}
+
+.book-transition-target {
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  z-index: 3;
+  width: min(60%, 310px);
+  aspect-ratio: 0.72;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.canvas-host:active {
+  cursor: grabbing;
+}
+
+:host ::ng-deep .book-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.fallback-cover {
+  position: absolute;
+  inset: 9%;
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 5px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms var(--ease);
+}
+
+.is-loading .fallback-cover,
+.is-fallback .fallback-cover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.is-loading .canvas-host,
+.is-fallback .canvas-host {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.viewer-loading {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--c-border) 80%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-surface) 88%, transparent);
+  padding: 7px 11px;
+  color: var(--c-muted-fg);
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+}
+
+.viewer-loading span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  animation: viewer-pulse 900ms ease-in-out infinite alternate;
+}
+
+.viewer-toolbar {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  left: 16px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  pointer-events: none;
+  min-width: 0;
+}
+
+.viewer-toolbar > span,
+.viewer-toolbar button,
+.fallback-label {
+  border: 1px solid color-mix(in srgb, var(--c-border) 82%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-surface) 90%, transparent);
+  color: var(--c-muted-fg);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+}
+
+.fallback-preview-button {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  z-index: 5;
+  min-height: 32px;
+  border: 1px solid color-mix(in srgb, var(--c-border) 82%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-surface) 90%, transparent);
+  padding: 0 12px;
+  color: var(--c-fg);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.fallback-preview-button:hover,
+.preview-button:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.viewer-toolbar > span {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  width: max-content;
+  min-width: max-content;
+  min-height: 32px;
+  max-width: none;
+  padding: 8px 10px;
+  overflow: visible;
+  background: color-mix(in srgb, var(--c-surface) 96%, transparent);
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.hint-mobile {
+  display: none;
+}
+
+.viewer-toolbar button {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 11px;
+  color: var(--c-fg);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 160ms var(--ease), border-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.viewer-toolbar button:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.viewer-toolbar button:active {
+  transform: translateY(1px);
+}
+
+.fallback-label {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  padding: 8px 10px;
+}
+
+.cover-placeholder {
+  position: absolute;
+  inset: 14%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  padding: 28px;
+  color: var(--c-muted-fg);
+  text-align: center;
+}
+
+.is-fallback .cover-placeholder {
+  display: flex;
+}
+
+.cover-placeholder lucide-icon {
+  color: var(--c-accent);
+}
+
+.cover-placeholder strong {
+  max-width: 18ch;
+  color: var(--c-fg);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+@keyframes viewer-pulse {
+  from { opacity: 0.4; transform: scale(0.82); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 576px) {
+  .book-transition-target {
+    top: 50%;
+    width: min(62%, 230px);
+  }
+
+  .viewer-toolbar {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .hint-desktop { display: none; }
+  .hint-mobile { display: inline; }
+}
+
+@media (max-width: 340px) {
+  .viewer-toolbar {
+    gap: 8px;
+  }
+
+  .viewer-toolbar > span,
+  .viewer-toolbar button {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewer-loading span {
+    animation: none;
+  }
+
+  .fallback-cover,
+  .canvas-host,
+  .viewer-toolbar button {
+    transition: none;
+  }
+}
