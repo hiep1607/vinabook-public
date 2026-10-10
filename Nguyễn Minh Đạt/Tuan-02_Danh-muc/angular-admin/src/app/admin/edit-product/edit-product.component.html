@@ -1,0 +1,150 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title m-0"><i class="fas fa-edit mr-2 text-primary"></i>Cập nhật sách</h4>
+        <button type="button" class="close" aria-label="Đóng" (click)="d()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-4">
+        <form [formGroup]="postForm" class="row">
+            <input type="hidden" formControlName='productId'>
+            <input type="hidden" formControlName="status">
+            <input type="hidden" formControlName="sold">
+
+            <!-- Cột trái: ảnh bìa -->
+            <div class="col-md-4 text-center">
+            <div class="cover-box mb-3">
+                    <img *ngIf="image" [src]="image" alt="Ảnh bìa" (error)="onImgError()">
+                    <div *ngIf="!image" class="cover-placeholder">
+                        <i class="fas fa-image fa-3x mb-2"></i>
+                        <p class="m-0">Chưa có ảnh bìa</p>
+                    </div>
+                </div>
+                <input type="file" id="editProductFile" hidden accept="image/*" (change)="onFileSelect($event)">
+                <label for="editProductFile" class="btn btn-outline-primary btn-sm m-0">
+                    <i class="fas fa-camera mr-1"></i> Đổi ảnh bìa
+                </label>
+            </div>
+
+            <!-- Cột phải: thông tin sách -->
+            <div class="col-md-8">
+                <div class="form-row">
+                    <div class="form-group col-md-7">
+                        <label for="name">Tên sách <span class="text-danger">*</span></label>
+                        <input type="text" id="name" [ngClass]="{'is-invalid':postForm.get('name')?.touched && postForm.get('name')?.invalid}" class="form-control" formControlName="name">
+                        <small class="invalid-feedback">Tên sách tối thiểu 4 ký tự</small>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="author">Tác giả <span class="text-danger">*</span></label>
+                        <input type="text" id="author" placeholder="VD: Dale Carnegie" [ngClass]="{'is-invalid':postForm.get('author')?.touched && postForm.get('author')?.invalid}" class="form-control" formControlName="author">
+                        <small class="invalid-feedback">Tác giả không được để trống</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <label for="price">Giá bán <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" id="price" [ngClass]="{'is-invalid':postForm.get('price')?.touched && postForm.get('price')?.invalid}" class="form-control" formControlName="price">
+                            <div class="input-group-append">
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <small class="invalid-feedback">Giá tối thiểu 1.000₫</small>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="quantity">Số lượng <span class="text-danger">*</span></label>
+                        <input type="number" id="quantity" [ngClass]="{'is-invalid':postForm.get('quantity')?.touched && postForm.get('quantity')?.invalid}" class="form-control" formControlName="quantity">
+                        <small class="invalid-feedback">Tối thiểu 1</small>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="discount">Giảm giá</label>
+                        <div class="input-group">
+                            <input type="number" id="discount" [ngClass]="{'is-invalid':postForm.get('discount')?.touched && postForm.get('discount')?.invalid}" class="form-control" formControlName="discount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="invalid-feedback">Từ 0 đến 100</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Thể loại</label>
+                    <select class="custom-select" id="category" formControlName="categoryId">
+                        <option *ngFor="let item of categories" [value]="item.categoryId">{{item.categoryName}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-0">
+                    <label for="description">Mô tả <span class="text-danger">*</span></label>
+                    <textarea id="description" rows="4" [ngClass]="{'is-invalid':postForm.get('description')?.touched && postForm.get('description')?.invalid}" class="form-control" formControlName="description"></textarea>
+                    <small class="invalid-feedback">Mô tả không được để trống</small>
+                </div>
+
+                <div class="preview-editor mt-3">
+                    <p *ngIf="previewLoadError" role="alert">Không tải được bản đọc thử. <button type="button" class="btn btn-sm btn-light" (click)="getPreview()">Thử lại</button></p>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <label class="mb-0 font-weight-bold">Bản đọc thử (5–20 trang)</label>
+                        <span class="small text-muted">{{previewPages.length}}/{{maxPreviewPages}} trang</span>
+                    </div>
+                    <div class="custom-control custom-switch mb-2">
+                        <input type="checkbox" class="custom-control-input" id="previewEnabled" [(ngModel)]="previewEnabled" [ngModelOptions]="{standalone: true}">
+                        <label class="custom-control-label" for="previewEnabled">Cho phép khách đọc thử</label>
+                    </div>
+                    <div class="custom-control custom-checkbox mb-2">
+                        <input type="checkbox" class="custom-control-input" id="rightsConfirmed" [(ngModel)]="rightsConfirmed" [ngModelOptions]="{standalone: true}">
+                        <label class="custom-control-label small" for="rightsConfirmed">Tôi xác nhận có quyền công khai các trang này</label>
+                    </div>
+                    <div class="preview-pages" *ngIf="previewPages.length">
+                        <div class="preview-page-row" *ngFor="let page of previewPages; let i = index">
+                            <span *ngIf="page.contentType === 'text'" class="text-thumb" aria-label="Trang văn bản">Aa</span>
+                            <img *ngIf="page.contentType !== 'text'" [src]="page.imageUrl" [alt]="'Trang đọc thử ' + (i + 1)">
+                            <span class="small flex-grow-1">Trang {{i + 1}}<small *ngIf="page.contentType === 'text'"> · Văn bản</small><br><em *ngIf="page.originalPageNumber">Trang gốc {{page.originalPageNumber}}</em></span>
+                            <button type="button" class="btn btn-sm btn-light" (click)="movePreviewPage(i, -1)" [disabled]="i === 0 || previewUploading || !!textDraft" aria-label="Đưa lên">↑</button>
+                            <button type="button" class="btn btn-sm btn-light" (click)="movePreviewPage(i, 1)" [disabled]="i === previewPages.length - 1 || previewUploading || !!textDraft" aria-label="Đưa xuống">↓</button>
+                            <button type="button" class="btn btn-sm btn-light" *ngIf="page.contentType !== 'text'" (click)="startReplacePreviewPage(page)" [disabled]="previewUploading || !!textDraft" aria-label="Đổi ảnh">↻</button>
+                            <button type="button" class="btn btn-sm btn-light" (click)="editTextPage(page)" [disabled]="previewUploading || !!textDraft" [attr.aria-label]="page.contentType === 'text' ? 'Sửa nội dung' : 'Thay bằng văn bản'">{{page.contentType === 'text' ? 'Sửa' : 'Nhập chữ'}}</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" (click)="removePreviewPage(page)" [disabled]="previewUploading || !!textDraft" aria-label="Xóa trang">×</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm mr-2" (click)="editTextPage()" [disabled]="previewUploading || !!textDraft || previewLoadError || previewPages.length >= maxPreviewPages">Thêm trang văn bản</button>
+                    <label for="previewPageFile" class="btn btn-outline-primary btn-sm mb-0" [class.disabled]="previewUploading || !!textDraft || previewLoadError || previewPages.length >= maxPreviewPages">
+                        {{previewUploading ? 'Đang tải…' : 'Thêm trang ảnh'}}
+                    </label>
+                    <input id="previewPageFile" type="file" hidden accept="image/jpeg,image/png,image/webp" (change)="onPreviewFileSelect($event)" [disabled]="previewUploading || !!textDraft || previewLoadError || previewPages.length >= maxPreviewPages">
+                    <input id="replacePreviewPageFile" type="file" hidden accept="image/jpeg,image/png,image/webp" (change)="onPreviewReplaceSelect($event)" [disabled]="previewUploading">
+                    <section *ngIf="textDraft as draft" class="text-editor mt-3" aria-label="Soạn trang đọc thử">
+                      <h5>{{draft.previewPageId ? 'Sửa trang ' + draft.pageOrder : 'Trang văn bản mới'}}</h5>
+                      <p class="small">Trang được lưu riêng ngay khi bấm Lưu trang. Nếu thay trang ảnh bằng chữ, ảnh cũ chỉ được thay sau khi lưu thành công.</p>
+                      <label for="previewHeading">Tiêu đề trang (không bắt buộc)</label>
+                      <input id="previewHeading" class="form-control mb-2" maxlength="120" [(ngModel)]="draft.heading" [ngModelOptions]="{standalone:true}">
+                      <label for="previewText">Nội dung đọc thử</label>
+                      <textarea id="previewText" class="form-control" rows="10" maxlength="1000" [(ngModel)]="draft.textContent" [ngModelOptions]="{standalone:true}" aria-describedby="previewTextHelp"></textarea>
+                      <small id="previewTextHelp" class="form-text">Tối đa 1000 ký tự và 24 dòng/trang để chữ không bị thu nhỏ. Chia nội dung dài sang trang tiếp theo.</small>
+                      <div class="text-options">
+                        <div><label for="previewFont">Kiểu chữ</label><select id="previewFont" class="custom-select" [(ngModel)]="draft.fontFamily" [ngModelOptions]="{standalone:true}"><option value="serif">Sách in (Noto Serif)</option><option value="sans">Rõ nét (Arial)</option></select></div>
+                        <div><label for="previewSize">Cỡ chữ</label><select id="previewSize" class="custom-select" [(ngModel)]="draft.fontSize" [ngModelOptions]="{standalone:true}"><option [ngValue]="18">18</option><option [ngValue]="20">20</option><option [ngValue]="22">22</option></select></div>
+                        <div><label for="previewAlign">Căn lề</label><select id="previewAlign" class="custom-select" [(ngModel)]="draft.textAlign" [ngModelOptions]="{standalone:true}"><option value="left">Trái</option><option value="center">Giữa (thơ)</option></select></div>
+                        <div><label for="previewNumber">Số trang gốc</label><input id="previewNumber" class="form-control" type="number" min="1" [(ngModel)]="draft.originalPageNumber" [ngModelOptions]="{standalone:true}"></div>
+                      </div>
+                      <details class="mt-2"><summary>Xem trước nội dung</summary>
+                        <article class="text-proof" [style.font-family]="draft.fontFamily === 'sans' ? 'Arial, sans-serif' : 'Vina Reader, Georgia, serif'" [style.font-size.px]="draft.fontSize || 20" [style.text-align]="draft.textAlign || 'left'">
+                          <h6>{{draft.heading}}</h6><p>{{draft.textContent}}</p>
+                        </article>
+                      </details>
+                      <div class="mt-3"><button type="button" class="btn btn-primary btn-sm mr-2" [disabled]="!validTextDraft || previewUploading" (click)="saveTextPage()">{{previewUploading ? 'Đang lưu...' : 'Lưu trang'}}</button><button type="button" class="btn btn-light btn-sm" [disabled]="previewUploading" (click)="textDraft = undefined">Hủy soạn</button></div>
+                    </section>
+                    <small class="form-text text-muted">Ảnh JPG, PNG hoặc WebP, tối đa 8MB/trang. Có thể lưu sách trước rồi thêm trang sau.</small>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="d()">Hủy</button>
+        <button type="button" class="btn btn-primary px-4" [disabled]="postForm.invalid || previewUploading || !!textDraft || previewLoadError" (click)="update()">
+            <i class="fas fa-save mr-1"></i> Lưu thay đổi
+        </button>
+    </div>
+</ng-template>
+<button type="button" class="btn btn-link p-0" aria-label="Chỉnh sửa sách" (click)="open(content)"><i class="fas fa-edit" aria-hidden="true"></i></button>

@@ -1,0 +1,46 @@
+<header class="admin-topbar">
+  <div class="topbar-copy">
+    <span>VinaBook workspace</span>
+    <strong>Trung tâm quản trị</strong>
+  </div>
+
+  <div class="topbar-actions">
+    <a class="storefront-link" [href]="storefrontUrl" target="_blank" rel="noopener">
+      <i class="fas fa-store"></i><span>Xem cửa hàng</span><i class="fas fa-external-link-alt"></i>
+    </a>
+
+    <div class="nav-item dropdown no-arrow notification-menu">
+      <button class="icon-button dropdown-toggle" id="alertsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Thông báo">
+        <i class="far fa-bell"></i>
+        <span class="notification-dot" *ngIf="getNotificationFalse() > 0">{{ getNotificationFalse() }}</span>
+      </button>
+      <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+        <div class="dropdown-title"><strong>Thông báo</strong><span>{{ getNotificationFalse() }} chưa đọc</span></div>
+        <div class="notification-list">
+          <a class="dropdown-item d-flex align-items-center" *ngFor="let item of notifications" (click)="readed(item.id)" [routerLink]="['/admin/order']" [class.unread]="!item.status">
+            <span class="notification-icon"><i class="fas fa-receipt"></i></span>
+            <span><small>{{ item.time | date:'medium' }}</small><strong>{{ item.message }}</strong></span>
+          </a>
+          <div class="empty-notification" *ngIf="notifications.length === 0">Chưa có thông báo mới.</div>
+        </div>
+        <button type="button" class="read-all" (click)="readAll()">Đánh dấu đã đọc tất cả</button>
+      </div>
+    </div>
+
+    <div class="nav-item dropdown no-arrow user-menu">
+      <button class="user-button dropdown-toggle" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img *ngIf="image" [src]="image" alt="Ảnh đại diện">
+        <span class="avatar-fallback" *ngIf="!image"><i class="fas fa-user"></i></span>
+        <span><small>Quản trị viên</small><strong>{{ name || 'VinaBook Admin' }}</strong></span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+        <app-profile (editFinish)="finish()"></app-profile>
+        <div class="dropdown-divider"></div>
+        <button type="button" class="dropdown-item logout-button" (click)="logOut()">
+          <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

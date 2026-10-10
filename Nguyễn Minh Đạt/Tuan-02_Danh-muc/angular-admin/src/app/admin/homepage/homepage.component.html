@@ -1,0 +1,187 @@
+<div class="homepage-editor">
+  <header class="editor-hero">
+    <div>
+      <div class="eyebrow"><span></span> Giao diện cửa hàng</div>
+      <h1>Quản trị trang chủ</h1>
+      <p>Điều chỉnh nội dung, thứ tự ưu tiên và các khu vực hiển thị trên trang chủ VinaBook.</p>
+    </div>
+    <div class="hero-actions">
+      <span class="change-state" [class.has-change]="form && form.dirty">
+        <i class="fas" [class.fa-check-circle]="!form || !form.dirty" [class.fa-circle]="form && form.dirty"></i>
+        {{ form && form.dirty ? 'Có thay đổi chưa lưu' : 'Đã đồng bộ' }}
+      </span>
+      <button type="button" class="button button-ghost" (click)="openStorefront()">
+        <i class="fas fa-external-link-alt"></i> Xem trang chủ
+      </button>
+      <button type="button" class="button button-primary" (click)="save()" [disabled]="saving || loading || !form || !form.dirty">
+        <i class="fas" [class.fa-save]="!saving" [class.fa-circle-notch]="saving" [class.fa-spin]="saving"></i>
+        {{ saving ? 'Đang lưu...' : 'Lưu thay đổi' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="loading-state" *ngIf="loading">
+    <span class="loader"></span>
+    <strong>Đang tải cấu hình trang chủ</strong>
+    <p>VinaBook đang đồng bộ nội dung và danh mục sản phẩm.</p>
+  </div>
+
+  <div class="error-state" *ngIf="loadError && !loading">
+    <i class="fas fa-unlink"></i>
+    <div><strong>Chưa thể kết nối dữ liệu</strong><p>Hãy kiểm tra backend rồi tải lại trang.</p></div>
+    <button type="button" class="button button-ghost" (click)="ngOnInit()">Thử lại</button>
+  </div>
+
+  <form *ngIf="!loading && !loadError" [formGroup]="form" (ngSubmit)="save()" class="editor-layout">
+    <aside class="section-index">
+      <p>Bố cục trang</p>
+      <a href="#hero"><span>01</span> Hero</a>
+      <a href="#benefits"><span>02</span> Lợi ích</a>
+      <a href="#latest"><span>03</span> Sách mới</a>
+      <a href="#stats"><span>04</span> Thống kê</a>
+      <a href="#bestseller"><span>05</span> Bán chạy</a>
+      <a href="#categories"><span>06</span> Danh mục</a>
+      <a href="#cta"><span>07</span> Kêu gọi hành động</a>
+      <button type="button" class="reset-link" (click)="restoreDefaults()">
+        <i class="fas fa-undo-alt"></i> Khôi phục mặc định
+      </button>
+    </aside>
+
+    <main class="sections">
+      <section id="hero" class="editor-card" formGroupName="hero">
+        <div class="card-heading">
+          <div class="section-number">01</div>
+          <div><span>Ấn tượng đầu tiên</span><h2>Hero đầu trang</h2><p>Nội dung chính và những cuốn sách xuất hiện đầu tiên.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid">
+          <label class="field field-small"><span>Dòng dẫn</span><input formControlName="eyebrow" placeholder="Nhà sách trực tuyến"></label>
+          <label class="field field-wide"><span>Tiêu đề chính</span><input formControlName="title" placeholder="Khám phá thế giới tri thức"></label>
+          <label class="field field-full"><span>Mô tả</span><textarea formControlName="description" rows="3"></textarea></label>
+          <label class="field"><span>Nút chính</span><input formControlName="primaryLabel"></label>
+          <label class="field"><span>Đường dẫn nút chính</span><input formControlName="primaryRoute" placeholder="/books"></label>
+          <label class="field"><span>Nút phụ</span><input formControlName="secondaryLabel"></label>
+          <label class="field"><span>Đường dẫn nút phụ</span><input formControlName="secondaryRoute" placeholder="/books/bestseller"></label>
+        </div>
+        <label class="inline-check"><input type="checkbox" formControlName="showScrollCue"><span></span> Hiện nút cuộn xuống nội dung</label>
+        <div class="selection-block">
+          <div><h3>Sách nổi bật trong Hero</h3><p>Chọn tối đa 5 cuốn. Nếu bỏ trống, hệ thống tự lấy sách bán chạy.</p></div>
+          <span class="selection-count">{{ form.get('hero.productIds')?.value.length || 0 }}/5 đã chọn</span>
+          <div class="choice-grid product-choices">
+            <button type="button" class="choice-card" *ngFor="let product of products"
+              [class.selected]="isSelected('hero.productIds', product.productId)"
+              (click)="toggleSelection('hero.productIds', product.productId, 5)">
+              <img [src]="product.image" [alt]="product.name">
+              <span><strong>{{ product.name }}</strong><small>{{ product.author || 'Chưa cập nhật tác giả' }}</small></span>
+              <i class="fas fa-check"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="benefits" class="editor-card" formGroupName="benefits">
+        <div class="card-heading">
+          <div class="section-number">02</div>
+          <div><span>Cam kết thương hiệu</span><h2>Dải lợi ích</h2><p>Bốn lý do giúp khách hàng an tâm mua sắm.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <label class="field field-full"><span>Tiêu đề khu vực</span><input formControlName="title"></label>
+        <div formArrayName="items" class="benefit-grid">
+          <div class="benefit-editor" *ngFor="let item of benefitItems.controls; let i = index" [formGroupName]="i">
+            <div class="benefit-top"><span>0{{ i + 1 }}</span><strong>Lợi ích {{ i + 1 }}</strong></div>
+            <label class="field"><span>Biểu tượng</span><select formControlName="icon"><option *ngFor="let icon of iconOptions" [value]="icon.value">{{ icon.label }}</option></select></label>
+            <label class="field"><span>Tiêu đề</span><input formControlName="title"></label>
+            <label class="field"><span>Mô tả</span><textarea formControlName="description" rows="2"></textarea></label>
+          </div>
+        </div>
+      </section>
+
+      <section id="latest" class="editor-card" formGroupName="latest">
+        <div class="card-heading">
+          <div class="section-number">03</div>
+          <div><span>Nội dung động</span><h2>Khu vực sách mới</h2><p>Sản phẩm được lấy tự động theo ngày cập nhật.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Dòng dẫn</span><input formControlName="overline"></label>
+          <label class="field"><span>Tiêu đề</span><input formControlName="title"></label>
+          <label class="field"><span>Nhãn liên kết</span><input formControlName="linkLabel"></label>
+          <label class="field"><span>Đường dẫn</span><input formControlName="route"></label>
+        </div>
+      </section>
+
+      <section id="stats" class="editor-card" formGroupName="stats">
+        <div class="card-heading">
+          <div class="section-number">04</div>
+          <div><span>Con số tin cậy</span><h2>Dải thống kê</h2><p>Số lượng sách, khách hàng và thể loại lấy trực tiếp từ hệ thống.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid stats-grid">
+          <label class="field"><span>Nhãn số sách</span><input formControlName="booksLabel"></label>
+          <label class="field"><span>Nhãn thể loại</span><input formControlName="categoriesLabel"></label>
+          <label class="field"><span>Giá trị giao hàng</span><input formControlName="shippingValue" placeholder="2-4"></label>
+          <label class="field"><span>Nhãn giao hàng</span><input formControlName="shippingLabel"></label>
+          <label class="field"><span>Mức miễn phí vận chuyển</span><input formControlName="freeShippingValue" placeholder="300K"></label>
+          <label class="field"><span>Nhãn miễn phí vận chuyển</span><input formControlName="freeShippingLabel"></label>
+        </div>
+      </section>
+
+      <section id="bestseller" class="editor-card" formGroupName="bestseller">
+        <div class="card-heading">
+          <div class="section-number">05</div>
+          <div><span>Nội dung động</span><h2>Khu vực bán chạy</h2><p>Sản phẩm được xếp hạng tự động theo số lượng đã bán.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Dòng dẫn</span><input formControlName="overline"></label>
+          <label class="field"><span>Tiêu đề</span><input formControlName="title"></label>
+          <label class="field"><span>Nhãn liên kết</span><input formControlName="linkLabel"></label>
+          <label class="field"><span>Đường dẫn</span><input formControlName="route"></label>
+        </div>
+      </section>
+
+      <section id="categories" class="editor-card" formGroupName="categories">
+        <div class="card-heading">
+          <div class="section-number">06</div>
+          <div><span>Điều hướng khám phá</span><h2>Danh mục nổi bật</h2><p>Chọn tối đa 8 thể loại muốn ưu tiên trên trang chủ.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Tiêu đề</span><input formControlName="title"></label>
+        </div>
+        <div class="selection-block">
+          <div><h3>Thể loại ưu tiên</h3><p>Nếu bỏ trống, trang chủ sẽ tự lấy các danh mục đang hoạt động.</p></div>
+          <span class="selection-count">{{ form.get('categories.categoryIds')?.value.length || 0 }}/8 đã chọn</span>
+          <div class="choice-grid category-choices">
+            <button type="button" class="category-choice" *ngFor="let category of categories"
+              [class.selected]="isSelected('categories.categoryIds', category.categoryId)"
+              (click)="toggleSelection('categories.categoryIds', category.categoryId, 8)">
+              <i class="fas fa-bookmark"></i><span>{{ category.categoryName }}</span><i class="fas fa-check"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="cta" class="editor-card" formGroupName="cta">
+        <div class="card-heading">
+          <div class="section-number">07</div>
+          <div><span>Điểm kết trang</span><h2>Kêu gọi hành động</h2><p>Thông điệp cuối cùng dẫn khách hàng vào kho sách.</p></div>
+          <label class="visibility-switch"><input type="checkbox" formControlName="visible"><span></span> Hiển thị</label>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>Tiêu đề</span><input formControlName="title"></label>
+          <label class="field field-full"><span>Mô tả</span><textarea formControlName="description" rows="3"></textarea></label>
+          <label class="field"><span>Nhãn nút</span><input formControlName="buttonLabel"></label>
+          <label class="field"><span>Đường dẫn</span><input formControlName="buttonRoute"></label>
+        </div>
+      </section>
+
+      <div class="bottom-actions">
+        <div><strong>Sẵn sàng cập nhật?</strong><span>Thay đổi sẽ xuất hiện ngay trên trang khách sau khi lưu.</span></div>
+        <button type="submit" class="button button-primary" [disabled]="saving || !form.dirty">
+          <i class="fas fa-save"></i> {{ saving ? 'Đang lưu...' : 'Lưu toàn bộ thay đổi' }}
+        </button>
+      </div>
+    </main>
+  </form>
+</div>

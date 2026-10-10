@@ -1,0 +1,95 @@
+<ng-template #content let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title m-0"><i class="fas fa-book-medical mr-2 text-primary"></i>Thêm sách mới</h4>
+        <button type="button" class="close" aria-label="Đóng" (click)="d()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-4">
+        <form [formGroup]="postForm" class="row">
+            <input type="hidden" formControlName='productId'>
+            <input type="hidden" formControlName="status">
+            <input type="hidden" formControlName="sold">
+
+            <!-- Cột trái: ảnh bìa -->
+            <div class="col-md-4 text-center">
+                <div class="cover-box mb-3">
+                    <img *ngIf="image" [src]="image" alt="Ảnh bìa" (error)="onImgError()">
+                    <div *ngIf="!image" class="cover-placeholder">
+                        <i class="fas fa-image fa-3x mb-2"></i>
+                        <p class="m-0">Chưa có ảnh bìa</p>
+                    </div>
+                </div>
+                <input type="file" id="addProductFile" hidden accept="image/*" (change)="onFileSelect($event)">
+                <label for="addProductFile" class="btn btn-outline-primary btn-sm m-0">
+                    <i class="fas fa-camera mr-1"></i> Chọn ảnh bìa
+                </label>
+            </div>
+
+            <!-- Cột phải: thông tin sách -->
+            <div class="col-md-8">
+                <div class="form-row">
+                    <div class="form-group col-md-7">
+                        <label for="name">Tên sách <span class="text-danger">*</span></label>
+                        <input type="text" id="name" placeholder="VD: Đắc nhân tâm" [ngClass]="{'is-invalid':postForm.get('name')?.touched && postForm.get('name')?.invalid}" class="form-control" formControlName="name">
+                        <small class="invalid-feedback">Tên sách tối thiểu 4 ký tự</small>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label for="author">Tác giả <span class="text-danger">*</span></label>
+                        <input type="text" id="author" placeholder="VD: Dale Carnegie" [ngClass]="{'is-invalid':postForm.get('author')?.touched && postForm.get('author')?.invalid}" class="form-control" formControlName="author">
+                        <small class="invalid-feedback">Tác giả không được để trống</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <label for="price">Giá bán <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" id="price" placeholder="0" [ngClass]="{'is-invalid':postForm.get('price')?.touched && postForm.get('price')?.invalid}" class="form-control" formControlName="price">
+                            <div class="input-group-append">
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <small class="invalid-feedback">Giá tối thiểu 1.000₫</small>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="quantity">Số lượng <span class="text-danger">*</span></label>
+                        <input type="number" id="quantity" placeholder="0" [ngClass]="{'is-invalid':postForm.get('quantity')?.touched && postForm.get('quantity')?.invalid}" class="form-control" formControlName="quantity">
+                        <small class="invalid-feedback">Tối thiểu 1</small>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="discount">Giảm giá</label>
+                        <div class="input-group">
+                            <input type="number" id="discount" placeholder="0" [ngClass]="{'is-invalid':postForm.get('discount')?.touched && postForm.get('discount')?.invalid}" class="form-control" formControlName="discount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="invalid-feedback">Từ 0 đến 100</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Thể loại</label>
+                    <select class="custom-select" id="category" formControlName="categoryId">
+                        <option *ngFor="let item of categories" [value]="item.categoryId">{{item.categoryName}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-0">
+                    <label for="description">Mô tả <span class="text-danger">*</span></label>
+                    <textarea id="description" rows="4" placeholder="Giới thiệu nội dung sách, nhà xuất bản..." [ngClass]="{'is-invalid':postForm.get('description')?.touched && postForm.get('description')?.invalid}" class="form-control" formControlName="description"></textarea>
+                    <small class="invalid-feedback">Mô tả không được để trống</small>
+                    <small class="form-text text-muted">Sau khi thêm sách, mở nút Sửa để tải và cấp phép 5–20 trang đọc thử.</small>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="d()">Hủy</button>
+        <button type="button" class="btn btn-primary px-4" [disabled]="postForm.invalid" (click)="save()">
+            <i class="fas fa-plus mr-1"></i> Thêm sách
+        </button>
+    </div>
+</ng-template>
+<button mat-raised-button color="primary" (click)="open(content)">Thêm sách</button>

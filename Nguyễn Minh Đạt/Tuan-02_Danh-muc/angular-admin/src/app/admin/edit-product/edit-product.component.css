@@ -1,0 +1,75 @@
+.cover-box {
+    width: 100%;
+    height: 280px;
+    border: 2px dashed #d1d3e2;
+    border-radius: 10px;
+    background: #f8f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cover-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
+.cover-placeholder {
+    color: #b7b9cc;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: #3a3b45;
+}
+
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #5a5c69;
+}
+.preview-editor {
+    border: 1px solid #e3e6f0;
+    border-radius: .5rem;
+    background: #fafbff;
+    padding: .85rem;
+}
+
+.preview-pages {
+    display: grid;
+    gap: .45rem;
+    margin-bottom: .65rem;
+}
+
+.preview-page-row {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    min-width: 0;
+    border: 1px solid #eaecf4;
+    border-radius: .35rem;
+    background: #fff;
+    padding: .35rem;
+}
+
+.preview-page-row img {
+    width: 42px;
+    height: 56px;
+    flex: 0 0 auto;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.preview-page-row em { color: #858796; font-size: 10px; font-style: normal; }
+.preview-page-row .btn { padding: .15rem .4rem; }
+.text-thumb { width:42px; height:56px; flex:0 0 auto; display:grid; place-items:center; background:#f5f0e5; color:#242424; font:20px "Vina Reader",Georgia,serif; }
+.text-editor { border-top:1px solid #ccd0dc; padding-top:16px; }
+.text-editor textarea { color:#242424; font:16px/1.6 "Vina Reader",Georgia,serif; }
+.text-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+.text-proof { background:#f5f0e5; color:#242424; padding:28px; margin-top:12px; line-height:1.5; }
+.text-proof p { white-space:pre-wrap; overflow-wrap:anywhere; }
+.text-proof h6 { font:inherit; font-weight:600; }
+.preview-page-row { flex-wrap:wrap; }
