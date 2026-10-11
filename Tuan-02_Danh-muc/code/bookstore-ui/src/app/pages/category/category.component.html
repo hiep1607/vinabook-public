@@ -1,0 +1,49 @@
+<section class="category-section">
+
+  <div class="container">
+
+    <!-- LOADING STATE -->
+    <div class="products-grid" *ngIf="loading">
+      <div class="skeleton-card" *ngFor="let s of skeletonItems">
+        <div class="skeleton-box skeleton-cover"></div>
+        <div class="skeleton-box skeleton-line"></div>
+        <div class="skeleton-box skeleton-line short"></div>
+      </div>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div class="load-error" *ngIf="error && !loading">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="retry()">Thử lại</button>
+      <p class="back-home"><a routerLink="/">Quay lại trang chủ</a></p>
+    </div>
+
+    <!-- CATEGORY CONTENT -->
+    <div *ngIf="!loading && !error">
+
+      <div class="category-header">
+        <h1 class="display-title" appReveal="up">{{ category?.categoryName }}</h1>
+        <p class="product-count" appReveal="up" [revealDelay]="100">{{ products.length }} sản phẩm</p>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" *ngIf="products.length === 0">
+        <p>Thể loại này chưa có sản phẩm</p>
+        <a routerLink="/">Quay lại trang chủ</a>
+      </div>
+
+      <!-- PRODUCTS GRID -->
+      <div class="products-grid" *ngIf="products.length > 0">
+        <app-product-card
+          *ngFor="let product of products; let i = index"
+          [product]="product"
+          appReveal="up"
+          [revealDelay]="(i % 4) * 80"
+        ></app-product-card>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
