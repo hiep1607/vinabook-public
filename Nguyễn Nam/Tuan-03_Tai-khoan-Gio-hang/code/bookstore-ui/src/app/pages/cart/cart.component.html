@@ -1,0 +1,161 @@
+<section class="cart-page">
+
+  <div class="container">
+
+    <h1 class="page-title display-title" appReveal="up">
+      Giỏ hàng
+    </h1>
+
+    <div class="cart-wrapper">
+      <p *ngIf="cartService.syncing" role="status">Đang đồng bộ giỏ hàng…</p>
+      <p *ngIf="cartService.syncError" role="alert">{{ cartService.syncError }} <button type="button" (click)="cartService.refresh()">Tải lại giỏ từ tài khoản</button></p>
+
+      <!-- LEFT -->
+
+      <div class="cart-products" *ngIf="cartItems.length > 0">
+
+<div
+  class="cart-item"
+  *ngFor="let item of cartItems; let i = index"
+  appReveal="left"
+  [revealDelay]="(i % 5) * 55"
+>
+
+  <input
+    [attr.aria-label]="'Chọn ' + item.name"
+    type="checkbox"
+   [(ngModel)]="item.selected"
+(change)="cartService.saveCart()"
+    class="cart-check"
+  >
+
+  <div class="cart-image">
+
+    <img
+      [src]="item.image"
+      [alt]="'Bìa sách ' + item.name"
+      loading="lazy"
+      decoding="async"
+    />
+
+  </div>
+
+  <div class="cart-info">
+
+    <h3>
+      {{ item.name }}
+    </h3>
+
+    <p>
+      {{ item.author }}
+    </p>
+
+    <div class="cart-price">
+      {{ item.price | number }}đ
+    </div>
+
+  </div>
+
+  <!-- QUANTITY -->
+
+  <div class="quantity-box">
+
+    <button
+      type="button"
+      (click)="decrease(item, $event)"
+      [attr.aria-label]="'Giảm số lượng ' + item.name"
+    >
+      -
+    </button>
+
+    <span>
+      {{ item.quantity }}
+    </span>
+
+    <button
+      type="button"
+      (click)="increase(item, $event)"
+      [attr.aria-label]="'Tăng số lượng ' + item.name"
+    >
+      +
+    </button>
+
+  </div>
+<button
+  type="button"
+  class="remove-btn"
+  (click)="removeItem(item, $event)"
+  [attr.aria-label]="'Xóa ' + item.name + ' khỏi giỏ hàng'"
+>
+  Xóa
+</button>
+</div>
+</div>
+
+      <div class="empty-cart" *ngIf="cartItems.length === 0">
+        <h2>Giỏ hàng đang trống</h2>
+        <p>Khám phá danh mục và thêm những cuốn sách bạn muốn đọc.</p>
+        <a routerLink="/books">Khám phá sách</a>
+      </div>
+      <!-- RIGHT -->
+
+      <div class="summary-box" *ngIf="cartItems.length > 0" appReveal="right">
+
+        <h3>
+          Tóm tắt đơn hàng
+        </h3>
+
+        <div class="summary-row">
+
+          <span>
+            Tạm tính
+          </span>
+
+          <strong>
+            {{ getSubtotal() | number }}đ
+          </strong>
+
+        </div>
+
+        <div class="summary-row">
+
+          <span>
+            Phí vận chuyển
+          </span>
+
+          <strong>
+            <ng-container *ngIf="getShippingFee() > 0; else freeShipping">
+              {{ getShippingFee() | number }}đ
+            </ng-container>
+            <ng-template #freeShipping>Miễn phí</ng-template>
+          </strong>
+
+        </div>
+
+        <div class="summary-total">
+
+          <span>
+            Tổng cộng
+          </span>
+
+          <strong>
+            {{ getTotal() | number }}đ
+          </strong>
+
+        </div>
+
+<button
+  type="button"
+  class="checkout-btn"
+  (click)="goToCheckout()"
+  [disabled]="getSubtotal() <= 0"
+>
+  Tiến hành thanh toán
+</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
