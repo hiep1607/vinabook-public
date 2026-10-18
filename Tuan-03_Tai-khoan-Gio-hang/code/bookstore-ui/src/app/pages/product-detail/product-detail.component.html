@@ -1,0 +1,324 @@
+<div class="detail-state" *ngIf="loading" role="status">Đang tải thông tin sách...</div>
+
+<div class="detail-state error" *ngIf="loadError" role="alert">
+  Không tải được thông tin sách. <a routerLink="/books">Quay lại danh mục</a>
+</div>
+<section class="detail-page" *ngIf="product && !loading">
+
+  <div class="container">
+
+    <!-- BREADCRUMB -->
+
+    <nav class="breadcrumb" aria-label="Đường dẫn điều hướng">
+
+      <a routerLink="/">Trang chủ</a>
+
+      <span class="sep" aria-hidden="true">›</span>
+
+      <a routerLink="/books">Sách</a>
+
+      <span class="sep" aria-hidden="true">›</span>
+
+      <a
+        *ngIf="product.categoryId"
+        [routerLink]="['/category', product.categoryId]"
+      >
+        {{ product.category }}
+      </a>
+
+      <span class="sep" *ngIf="product.categoryId" aria-hidden="true">›</span>
+
+      <span class="current" aria-current="page">{{ product.name }}</span>
+
+    </nav>
+
+    <div class="detail-wrapper">
+
+      <!-- IMAGE -->
+
+      <div class="detail-image" appReveal="left">
+
+        <app-book-3d-viewer
+          [coverImage]="product.image"
+          [originalCoverImage]="product.originalImage"
+          [title]="product.name"
+          [author]="product.author"
+          [description]="product.description"
+          [productId]="product.id"
+          [category]="product.category"
+          [previewEnabled]="previewAvailable"
+          [paused]="previewOpen"
+          (previewRequested)="onPreviewRequested()"
+        ></app-book-3d-viewer>
+
+      </div>
+
+      <!-- INFO -->
+
+      <div class="detail-info" appReveal="right">
+
+        <div class="detail-meta-row">
+          <span class="detail-badge" *ngIf="product.discount > 0">
+            Giảm {{ product.discount }}%
+          </span>
+
+          <!-- Dynamic average rating -->
+
+          <div class="rating" *ngIf="reviewCount > 0">
+            <span class="stars-display">
+              {{ displayStars(averageRating) }}
+            </span>
+            <span class="rating-value">{{ averageRating }}</span>
+            <span class="rating-count">({{ reviewCount }} đánh giá)</span>
+          </div>
+
+          <div class="rating no-reviews-yet" *ngIf="reviewCount === 0">
+            Chưa có đánh giá
+          </div>
+        </div>
+
+        <h1>
+          {{ product.name }}
+        </h1>
+
+        <p class="author">
+          Tác giả: {{ product.author }}
+        </p>
+
+        <div class="price-box">
+
+          <span class="new-price">
+           {{ product.price.toLocaleString('vi-VN') }}đ
+          </span>
+
+          <span class="old-price" *ngIf="product.discount > 0">
+           {{ product.oldPrice.toLocaleString('vi-VN') }}đ
+          </span>
+
+        </div>
+
+        <p class="description">
+
+          {{ product.description }}
+
+        </p>
+
+        <div class="purchase-box">
+          <!-- QUANTITY -->
+
+          <div class="qty-row">
+
+            <span class="qty-label">Số lượng:</span>
+
+            <div class="qty-stepper">
+
+              <button
+                type="button"
+                (click)="decreaseQty()"
+                [disabled]="qty <= 1"
+                aria-label="Giảm số lượng"
+              >
+                <lucide-icon name="minus"></lucide-icon>
+              </button>
+
+              <span class="qty-value">{{ qty }}</span>
+
+              <button
+                type="button"
+                (click)="increaseQty()"
+                [disabled]="qty >= maxQty"
+                aria-label="Tăng số lượng"
+              >
+                <lucide-icon name="plus"></lucide-icon>
+              </button>
+
+            </div>
+
+            <span class="stock-hint" *ngIf="product.quantity > 0">
+              Còn {{ product.quantity }} cuốn
+            </span>
+
+            <span class="stock-hint out" *ngIf="maxQty === 0">Hết hàng</span>
+
+          </div>
+
+          <div #ctaActions class="actions">
+
+            <button
+              type="button"
+              class="buy-btn"
+              (click)="buyNow()"
+              [disabled]="maxQty === 0"
+            >
+              Mua ngay
+            </button>
+
+            <button type="button" class="cart-btn" (click)="addToCart()" [disabled]="maxQty === 0">
+              Thêm giỏ hàng
+            </button>
+
+            <button
+              type="button"
+              class="wishlist-btn"
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()"
+              [title]="isWishlisted ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích'"
+              [attr.aria-label]="isWishlisted ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích'"
+            >
+              <lucide-icon name="heart" [attr.fill]="isWishlisted ? 'currentColor' : 'none'"></lucide-icon>
+              {{ isWishlisted ? 'Đã yêu thích' : 'Yêu thích' }}
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- RELATED BOOKS -->
+
+  <section class="related-section" *ngIf="relatedBooks.length > 0">
+    <div class="container">
+      <div class="related-heading" appReveal="up">
+        <div>
+          <h2 class="display-title">Sách cùng thể loại</h2>
+          <p>Những tựa sách có thể bạn cũng quan tâm.</p>
+        </div>
+      </div>
+
+      <div class="related-carousel">
+        <button type="button" class="related-arrow related-arrow-left" (click)="slideRelated(-1)" aria-label="Xem sách phía trước">
+          <lucide-icon name="chevron-left"></lucide-icon>
+        </button>
+
+        <div class="related-viewport" #relatedSlider>
+          <div class="related-row">
+            <app-product-card
+              *ngFor="let item of relatedBooks; let i = index"
+              [product]="item"
+              appReveal="up"
+              [revealDelay]="(i % 4) * 80"
+            ></app-product-card>
+          </div>
+        </div>
+
+        <button type="button" class="related-arrow related-arrow-right" (click)="slideRelated(1)" aria-label="Xem thêm sách">
+          <lucide-icon name="chevron-right"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="review-section">
+    <div class="container">
+      <div class="review-heading" appReveal="up">
+        <div>
+          <h2 class="display-title">Đánh giá sản phẩm</h2>
+          <p>Chia sẻ cảm nhận của bạn về cuốn sách này.</p>
+        </div>
+
+        <div class="review-summary" *ngIf="reviewCount > 0">
+          <strong>{{ averageRating }}</strong>
+          <span class="review-summary-stars">{{ displayStars(averageRating) }}</span>
+          <small>{{ reviewCount }} đánh giá</small>
+        </div>
+
+      </div>
+
+      <div class="review-layout">
+        <div class="review-compose" *ngIf="authService.isLoggedIn()" appReveal="up">
+          <div class="compose-heading">
+            <h3>{{ isEditing ? 'Đánh giá của bạn' : 'Viết đánh giá' }}</h3>
+            <span *ngIf="isEditing">Đang chỉnh sửa</span>
+          </div>
+
+          <span class="field-label">Mức độ hài lòng</span>
+          <div class="star-picker" role="radiogroup" aria-label="Chọn số sao">
+            <button
+              type="button"
+              *ngFor="let s of stars"
+              [class]="starClass(s)"
+              (click)="setRating(s)"
+              (mouseenter)="setHover(s)"
+              (mouseleave)="clearHover()"
+              [attr.aria-label]="s + ' sao'"
+              [attr.aria-pressed]="reviewRating === s"
+            >★</button>
+            <span class="star-hint" [class.chosen]="reviewRating > 0">{{ ratingHint }}</span>
+          </div>
+
+          <label for="review-content" class="field-label">Nhận xét</label>
+          <textarea
+            id="review-content"
+            placeholder="Điều gì khiến bạn thích hoặc chưa hài lòng?"
+            [(ngModel)]="reviewContent"
+          ></textarea>
+
+          <div class="review-form-actions">
+            <small>Đánh giá của bạn sẽ được hiển thị công khai.</small>
+            <button type="button" class="submit-review" (click)="addReview()">
+              {{ isEditing ? 'Cập nhật' : 'Gửi đánh giá' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="login-prompt" *ngIf="!authService.isLoggedIn()">
+          <span class="login-icon"><lucide-icon name="user"></lucide-icon></span>
+          <div><strong>Bạn đã đọc cuốn sách này?</strong><p>Đăng nhập để chia sẻ nhận xét với cộng đồng VinaBook.</p></div>
+          <a routerLink="/login">Đăng nhập</a>
+        </div>
+
+        <div class="review-list" [class.full-width]="!authService.isLoggedIn()">
+          <article class="review-card" *ngFor="let review of visibleReviews">
+            <div class="review-avatar" aria-hidden="true">{{ reviewInitial(review.name) }}</div>
+            <div class="review-body">
+              <div class="review-top">
+                <div><h4>{{ review.name }}</h4><span class="review-stars">{{ displayStars(review.rating) }}</span></div>
+                <time>{{ review.date | date:'dd/MM/yyyy' }}</time>
+              </div>
+              <p>{{ review.content }}</p>
+            </div>
+          </article>
+
+          <div class="no-reviews" *ngIf="reviews.length === 0">
+            <span>★</span>
+            <strong>Chưa có đánh giá</strong>
+            <p>Hãy là người đầu tiên chia sẻ cảm nhận về cuốn sách này.</p>
+          </div>
+
+          <button class="show-more-btn" type="button" *ngIf="reviews.length > visibleReviewCount" (click)="showMoreReviews()">
+            Xem thêm {{ reviews.length - visibleReviewCount }} đánh giá
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<app-book-preview-reader
+  *ngIf="previewOpen"
+  [product]="product"
+  (closed)="closePreview()"
+></app-book-preview-reader>
+
+<!-- STICKY BUY BAR — chỉ mobile/tablet nhỏ (≤768px), hiện khi cụm CTA gốc rời viewport.
+     Nút tái dùng đúng handler buyNow()/addToCart() và ràng buộc disabled của CTA gốc;
+     class .buy-btn/.cart-btn giúp FabCollisionService nhận diện và nâng FAB lên trên bar. -->
+<div class="sticky-buy-bar" *ngIf="stickyBarVisible" #stickyBar role="region" aria-label="Thanh mua hàng nhanh">
+  <div class="sticky-price">
+    <span class="sticky-price-label">Giá</span>
+    <strong class="sticky-price-value">{{ product.price.toLocaleString('vi-VN') }}đ</strong>
+  </div>
+  <div class="sticky-actions">
+    <button type="button" class="buy-btn" (click)="buyNow()" [disabled]="maxQty === 0">
+      Mua ngay
+    </button>
+    <button type="button" class="cart-btn" (click)="addToCart()" [disabled]="maxQty === 0">
+      Thêm giỏ hàng
+    </button>
+  </div>
+</div>
