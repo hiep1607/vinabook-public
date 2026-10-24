@@ -1,0 +1,92 @@
+<section class="result-page">
+  <div class="result-shell">
+    <div *ngIf="loading" class="state-card loading-state" role="status">
+      <span class="skeleton icon"></span>
+      <span class="skeleton line wide"></span>
+      <span class="skeleton line"></span>
+    </div>
+
+    <div *ngIf="!loading && loadError" class="state-card error-state" role="alert">
+      <span class="state-mark">!</span>
+      <h1>Chưa kiểm tra được thanh toán</h1>
+      <p>{{ loadError }}</p>
+      <div class="actions">
+        <button type="button" class="primary-btn" (click)="loadStatus()">Thử lại</button>
+        <button type="button" class="secondary-btn" (click)="goToOrders()">Xem đơn hàng</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!loading && payment">
+      <div class="state-card paid-state" *ngIf="payment.paymentStatus === 'PAID'">
+        <span class="state-mark">✓</span>
+        <p class="state-label">Thanh toán thành công</p>
+        <h1>Đơn #{{ payment.orderId }} đã được ghi nhận</h1>
+        <p>VinaBook sẽ cập nhật quá trình xử lý và giao sách trong mục đơn hàng.</p>
+        <div class="amount">{{ payment.amount | number }}đ</div>
+        <button type="button" class="primary-btn" (click)="goToOrders()">Theo dõi đơn hàng</button>
+      </div>
+
+      <div class="payment-layout" *ngIf="payment.paymentMethod === 'BANK_QR' && payment.paymentStatus !== 'PAID'">
+        <div class="qr-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="state-label">Chuyển khoản QR</p>
+              <h1>Quét mã để thanh toán</h1>
+            </div>
+            <span class="pending-badge">Chờ xác nhận</span>
+          </div>
+
+          <div class="qr-frame">
+            <img [src]="payment.qrUrl" [alt]="'Mã QR thanh toán đơn ' + payment.orderId" />
+          </div>
+
+          <p class="qr-note">Dùng ứng dụng ngân hàng để quét mã. Không sửa số tiền và nội dung chuyển khoản.</p>
+        </div>
+
+        <aside class="transfer-panel">
+          <h2>Thông tin chuyển khoản</h2>
+          <div class="transfer-row">
+            <span>Ngân hàng</span>
+            <strong>{{ payment.bankId }}</strong>
+          </div>
+          <div class="transfer-row">
+            <span>Số tài khoản</span>
+            <button type="button" (click)="copy(payment.bankAccountNo, 'số tài khoản')">{{ payment.bankAccountNo }}</button>
+          </div>
+          <div class="transfer-row">
+            <span>Chủ tài khoản</span>
+            <strong>{{ payment.bankAccountName }}</strong>
+          </div>
+          <div class="transfer-row">
+            <span>Số tiền</span>
+            <button type="button" (click)="copy(payment.amount.toString(), 'số tiền')">{{ payment.amount | number }}đ</button>
+          </div>
+          <div class="transfer-row content-row">
+            <span>Nội dung</span>
+            <button type="button" (click)="copy(payment.transferContent, 'nội dung')">{{ payment.transferContent }}</button>
+          </div>
+          <p class="reconcile-note">Trạng thái tự làm mới. Admin xác nhận sau khi tiền vào tài khoản cửa hàng.</p>
+          <button type="button" class="secondary-btn full" (click)="goToOrders()">Xem đơn hàng</button>
+        </aside>
+      </div>
+
+      <div
+        class="state-card"
+        *ngIf="payment.paymentMethod !== 'BANK_QR' && payment.paymentStatus !== 'PAID'"
+        [class.error-state]="payment.paymentStatus === 'FAILED'"
+      >
+        <span class="state-mark">{{ payment.paymentStatus === 'FAILED' ? '!' : '…' }}</span>
+        <p class="state-label">{{ methodLabel() }}</p>
+        <h1>{{ payment.paymentStatus === 'FAILED' ? 'Giao dịch chưa hoàn tất' : 'Đang chờ kết quả thanh toán' }}</h1>
+        <p *ngIf="payment.paymentStatus === 'FAILED'">Bạn có thể tạo một phiên thanh toán mới. Đơn hàng cũ không bị nhân đôi.</p>
+        <p *ngIf="payment.paymentStatus !== 'FAILED'">Hệ thống đang chờ xác nhận từ cổng thanh toán. Trang sẽ tự cập nhật.</p>
+        <div class="actions">
+          <button *ngIf="payment.paymentStatus === 'FAILED'" type="button" class="primary-btn" (click)="retryPayment()" [disabled]="retrying">
+            {{ retrying ? 'Đang mở cổng...' : 'Thanh toán lại' }}
+          </button>
+          <button type="button" class="secondary-btn" (click)="goToOrders()">Xem đơn hàng</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</section>

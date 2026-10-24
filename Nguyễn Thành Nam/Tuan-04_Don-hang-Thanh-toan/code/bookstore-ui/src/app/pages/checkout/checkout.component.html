@@ -1,0 +1,204 @@
+<section class="checkout-page">
+  <div class="container">
+    <h1 class="checkout-title display-title" appReveal="up">Thanh toán</h1>
+
+    <form class="checkout-wrapper" (ngSubmit)="placeOrder()" #checkoutForm="ngForm">
+      <div class="checkout-form" appReveal="left">
+        <div class="form-box">
+          <h2>Thông tin giao hàng</h2>
+
+          <fieldset *ngIf="!showNewForm && addresses.length > 0" class="address-list">
+            <legend class="sr-only">Chọn địa chỉ giao hàng</legend>
+
+            <label
+              class="address-option"
+              *ngFor="let address of addresses"
+              [class.selected]="selectedAddress && selectedAddress.id === address.id"
+            >
+              <input
+                type="radio"
+                name="shippingAddress"
+                [value]="address.id"
+                [checked]="selectedAddress && selectedAddress.id === address.id"
+                (change)="selectAddress(address)"
+              />
+
+              <span class="address-body">
+                <span class="address-top">
+                  <strong>{{ address.label }}</strong>
+                  <span *ngIf="address.isDefault" class="badge">Mặc định</span>
+                </span>
+                <span>{{ address.name }} · {{ address.phone }}</span>
+                <span class="address-street">{{ address.street }}</span>
+              </span>
+            </label>
+
+            <button type="button" class="ghost-btn" (click)="useNewAddress()">
+              Dùng địa chỉ khác
+            </button>
+          </fieldset>
+
+          <div *ngIf="showNewForm" class="new-address" appReveal="scale">
+            <div class="form-group">
+              <label for="shipping-label">Nhãn địa chỉ</label>
+              <input
+                id="shipping-label"
+                name="shippingLabel"
+                type="text"
+                autocomplete="off"
+                placeholder="Nhà riêng, Văn phòng..."
+                [(ngModel)]="shippingForm.label"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="shipping-name">Họ và tên</label>
+              <input
+                id="shipping-name"
+                name="shippingName"
+                type="text"
+                autocomplete="name"
+                [(ngModel)]="shippingForm.name"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="shipping-phone">Số điện thoại</label>
+              <input
+                id="shipping-phone"
+                name="shippingPhone"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                [(ngModel)]="shippingForm.phone"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="shipping-street">Địa chỉ giao hàng</label>
+              <input
+                id="shipping-street"
+                name="shippingStreet"
+                type="text"
+                autocomplete="street-address"
+                [(ngModel)]="shippingForm.street"
+                required
+              />
+            </div>
+
+            <label class="save-toggle">
+              <input name="saveToProfile" type="checkbox" [(ngModel)]="saveToProfile" />
+              Lưu địa chỉ này vào hồ sơ của tôi
+            </label>
+
+            <button
+              *ngIf="addresses.length > 0"
+              type="button"
+              class="link-btn"
+              (click)="cancelNewAddress()"
+            >
+              Chọn từ địa chỉ đã lưu
+            </button>
+          </div>
+
+          <p *ngIf="formError" class="form-error" role="alert">{{ formError }}</p>
+        </div>
+
+        <div class="form-box payment-box">
+          <div class="box-heading">
+            <div>
+              <h2>Hình thức thanh toán</h2>
+              <p>Thông tin giao dịch được xử lý an toàn tại máy chủ VinaBook.</p>
+            </div>
+            <span class="secure-label">Bảo mật</span>
+          </div>
+
+          <div class="payment-list" [class.loading]="methodsLoading">
+            <button
+              *ngFor="let method of availablePaymentMethods"
+              type="button"
+              class="payment-option"
+              [class.selected]="selectedPayment === method.code"
+              [class.unavailable]="!method.available"
+              [disabled]="!method.available || placing"
+              (click)="selectPayment(method, $event)"
+              [attr.aria-pressed]="selectedPayment === method.code"
+            >
+              <span class="payment-mark" [attr.data-method]="method.code">{{ method.short }}</span>
+              <span class="payment-body">
+                <span class="payment-title">
+                  <strong>{{ method.label }}</strong>
+                  <span *ngIf="!method.available" class="method-state">Chưa cấu hình</span>
+                </span>
+                <span>{{ method.description }}</span>
+              </span>
+              <span class="payment-check" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <p class="payment-note" *ngIf="selectedPayment === 'BANK_QR'">
+            Đơn chỉ chuyển sang đã thanh toán sau khi cửa hàng đối soát giao dịch.
+          </p>
+          <p class="payment-note" *ngIf="selectedPayment === 'VNPAY' || selectedPayment === 'MOMO'">
+            Sau khi tạo đơn, bạn sẽ được chuyển sang cổng thanh toán để hoàn tất giao dịch.
+          </p>
+        </div>
+      </div>
+
+      <aside class="checkout-summary" aria-label="Tóm tắt đơn hàng" appReveal="right">
+        <h2>Đơn hàng</h2>
+
+        <div class="summary-items">
+          <article class="summary-item" *ngFor="let item of cartItems">
+            <img [src]="item.image" [alt]="'Bìa sách ' + item.name" width="44" height="62">
+            <div><strong>{{ item.name }}</strong><span>{{ item.quantity }} × {{ item.price | number }}đ</span></div>
+            <strong>{{ item.quantity * item.price | number }}đ</strong>
+          </article>
+        </div>
+
+        <div class="summary-row">
+          <span>Tạm tính</span>
+          <strong>{{ getSubtotal() | number }}đ</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Phí vận chuyển</span>
+          <strong>
+            <ng-container *ngIf="getShipping() > 0; else checkoutFreeShipping">
+              {{ getShipping() | number }}đ
+            </ng-container>
+            <ng-template #checkoutFreeShipping>Miễn phí</ng-template>
+          </strong>
+        </div>
+
+        <p class="payment-hint" *ngIf="getSubtotal() < freeShippingThreshold">
+          Miễn phí vận chuyển cho đơn từ {{ freeShippingThreshold | number }}đ.
+        </p>
+
+        <div class="summary-row">
+          <span>Thanh toán</span>
+          <strong>{{ selectedPaymentLabel() }}</strong>
+        </div>
+
+        <div class="summary-total">
+          <span>Tổng cộng</span>
+          <strong>{{ getTotal() | number }}đ</strong>
+        </div>
+
+        <button
+          #placeOrderButton
+          type="submit"
+          class="place-order-btn"
+          [class.success]="orderPlaced"
+          [disabled]="placing || orderPlaced || cartItems.length === 0"
+        >
+          {{ orderPlaced ? 'Đặt hàng thành công' : (placing ? 'Đang xử lý...' : (selectedPayment === 'COD' ? 'Đặt hàng' : 'Tiếp tục thanh toán')) }}
+        </button>
+
+        <p class="summary-safe">Không lưu thông tin thẻ hoặc mật khẩu ví trên VinaBook.</p>
+      </aside>
+    </form>
+  </div>
+</section>

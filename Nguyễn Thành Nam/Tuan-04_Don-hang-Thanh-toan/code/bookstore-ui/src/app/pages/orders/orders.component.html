@@ -1,0 +1,135 @@
+<section class="orders-page">
+
+  <div class="container">
+
+    <h1 class="orders-title display-title" appReveal="up">
+      Đơn hàng của tôi
+    </h1>
+
+    <p *ngIf="loading" class="orders-message" role="status">Đang tải đơn hàng...</p>
+
+    <div *ngIf="loadError" class="orders-message error" role="alert">
+      <p>Không tải được đơn hàng. Vui lòng kiểm tra kết nối rồi thử lại.</p>
+      <button type="button" (click)="ngOnInit()">Thử lại</button>
+    </div>
+
+    <p *ngIf="!loading && !loadError && orders.length === 0" class="orders-message">
+      Bạn chưa có đơn hàng nào.
+    </p>
+
+    <div
+      class="order-card"
+      *ngFor="let order of orders; let i = index"
+      appReveal="up"
+      [revealDelay]="(i % 4) * 80"
+    >
+
+      <!-- TOP -->
+
+      <div class="order-top">
+
+        <div>
+
+          <h3>
+
+            Đơn #{{ order.id }}
+
+          </h3>
+
+          <p>
+
+            {{ order.date | date:'dd/MM/yyyy HH:mm' }}
+
+          </p>
+
+        </div>
+
+        <div class="order-statuses">
+          <span class="payment-status" [class.paid]="order.paymentStatus === 'PAID'" [class.failed]="order.paymentStatus === 'FAILED'">
+            {{ paymentStatusLabel(order) }}
+          </span>
+          <span class="status" [ngClass]="statusClass(order.status)">{{ order.status }}</span>
+        </div>
+
+      </div>
+
+      <!-- PRODUCTS -->
+
+      <div
+        class="order-product"
+        *ngFor="let item of order.items"
+      >
+
+        <img
+          [src]="item.image"
+          [alt]="'Bìa sách ' + item.name"
+          loading="lazy"
+          decoding="async"
+        />
+
+        <div>
+
+          <h4>
+            {{ item.name }}
+          </h4>
+
+          <p>
+            x{{ item.quantity }}
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- SHIPPING -->
+
+      <div class="order-shipping" *ngIf="order.shippingAddress">
+
+        <span class="shipping-label">Giao tới:</span>
+
+        <div class="shipping-info">
+
+          <strong>
+            {{ order.shippingAddress.name }} - {{ order.shippingAddress.phone }}
+          </strong>
+
+          <p>{{ order.shippingAddress.street }}</p>
+
+        </div>
+
+      </div>
+
+      <div class="order-payment">
+        <div>
+          <span>Phương thức thanh toán</span>
+          <strong>{{ paymentMethodLabel(order.paymentMethod) }}</strong>
+        </div>
+        <button
+          *ngIf="canPay(order)"
+          type="button"
+          (click)="continuePayment(order)"
+          [disabled]="payingOrderId === order.id"
+        >
+          {{ payingOrderId === order.id ? 'Đang mở...' : (order.paymentMethod === 'BANK_QR' ? 'Xem mã QR' : 'Thanh toán lại') }}
+        </button>
+      </div>
+
+      <!-- TOTAL -->
+
+      <div class="order-total">
+
+        Tổng cộng:
+
+        <strong>
+
+          {{ order.total | number }}đ
+
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
