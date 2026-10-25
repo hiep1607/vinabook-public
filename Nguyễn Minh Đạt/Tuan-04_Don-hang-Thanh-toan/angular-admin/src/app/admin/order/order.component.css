@@ -1,0 +1,23 @@
+table {
+    width: 100%;
+}
+
+.payment-method,
+.payment-state {
+    display: block;
+    white-space: nowrap;
+}
+
+.payment-method {
+    color: #163d34;
+    font-weight: 700;
+}
+
+.payment-state {
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.payment-state.paid { color: #14765a; }
+.payment-state.pending { color: #98631a; }
+.payment-state.failed { color: #b42318; }

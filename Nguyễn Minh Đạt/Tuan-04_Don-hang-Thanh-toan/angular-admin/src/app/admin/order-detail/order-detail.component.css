@@ -1,0 +1,35 @@
+table {
+    width: 100%;
+}
+
+.payment-summary {
+    background: #f1f7f5;
+    border: 1px solid #d9e8e3;
+    border-radius: 10px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 18px;
+    padding: 14px 16px;
+}
+
+.payment-summary div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.payment-summary span {
+    color: #6b7d77;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.payment-summary strong {
+    color: #273d36;
+    overflow-wrap: anywhere;
+}
+
+.payment-summary strong.paid {
+    color: #14765a;
+}
