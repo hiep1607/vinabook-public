@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  storefront:
+    name: Storefront build and tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bookstore-ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.20.2
+          cache: npm
+          cache-dependency-path: bookstore-ui/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npx tsc -p tsconfig.spec.json --noEmit
+      - run: npx ng test --watch=false --browsers=ChromeHeadlessCI
+
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Import test database
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        run: mysql --protocol=tcp -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" < database.sql
+      - name: Run backend tests
+        working-directory: VinaBookStore
+        env:
+          DB_URL: jdbc:mysql://127.0.0.1:3306/martfury_shop?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          DB_USERNAME: root
+          DB_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: chmod +x mvnw && ./mvnw test
+
+  admin:
+    name: Admin build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: angular-admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16.20.2
+          cache: npm
+          cache-dependency-path: angular-admin/package-lock.json
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+      - run: npx ng test --watch=false --browsers=ChromeHeadlessCI
