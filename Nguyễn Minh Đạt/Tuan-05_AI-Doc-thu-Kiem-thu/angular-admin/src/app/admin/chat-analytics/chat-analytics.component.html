@@ -1,0 +1,39 @@
+<section class="chat-analytics-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Trợ lý mua sách</span>
+      <h1>Hiệu quả chatbot</h1>
+      <p>Theo dõi chất lượng trả lời mà không lưu nội dung hội thoại hay dữ liệu nhạy cảm.</p>
+    </div>
+    <button type="button" (click)="load()" [disabled]="loading">
+      <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Làm mới
+    </button>
+  </header>
+
+  <div class="state" *ngIf="loading">Đang tổng hợp dữ liệu chatbot…</div>
+  <div class="state error" *ngIf="error">
+    <span>{{ error }}</span><button type="button" (click)="load()">Thử lại</button>
+  </div>
+
+  <ng-container *ngIf="metrics && !loading">
+    <div class="metrics-grid">
+      <article><span>Tổng câu trả lời</span><strong>{{ metrics.totalMessages | number }}</strong><small>Dữ liệu tích lũy</small></article>
+      <article><span>Tỷ lệ fallback</span><strong>{{ metrics.fallbackRate | number:'1.1-1' }}%</strong><small>{{ metrics.fallbackCount | number }} lần dùng chế độ cơ bản</small></article>
+      <article><span>Độ trễ trung bình</span><strong>{{ metrics.averageLatencyMs | number:'1.0-0' }} ms</strong><small>Từ khi gửi đến khi có kết quả</small></article>
+      <article><span>Mức hài lòng</span><strong>{{ satisfactionRate | number:'1.0-0' }}%</strong><small>{{ metrics.positiveFeedback }} tốt · {{ metrics.negativeFeedback }} chưa tốt</small></article>
+    </div>
+
+    <div class="analytics-card">
+      <div class="card-heading">
+        <div><h2>Nhu cầu người dùng</h2><p>Phân bổ ý định được nhận diện trong từng câu hỏi.</p></div>
+        <span>{{ intents.length }} nhóm</span>
+      </div>
+      <div class="empty" *ngIf="!intents.length">Chưa có lượt trò chuyện để phân tích.</div>
+      <div class="intent-row" *ngFor="let item of intents">
+        <div class="intent-label"><strong>{{ item.label }}</strong><span>{{ item.count | number }} lượt</span></div>
+        <div class="bar"><span [style.width.%]="item.rate"></span></div>
+        <b>{{ item.rate | number:'1.0-1' }}%</b>
+      </div>
+    </div>
+  </ng-container>
+</section>
