@@ -1,0 +1,206 @@
+<button
+  class="chat-fab"
+  #fabBtn
+  [class.active]="open"
+  [attr.tabindex]="open ? -1 : 0"
+  [attr.aria-hidden]="open ? 'true' : null"
+  (click)="toggle()"
+  [attr.aria-expanded]="open"
+  aria-controls="vinabook-chat-panel"
+  [attr.aria-label]="open ? 'Đóng trợ lý VinaBook' : 'Mở trợ lý VinaBook'"
+>
+  <lucide-icon [name]="open ? 'x' : 'message-circle'" [size]="23"></lucide-icon>
+</button>
+
+<section
+  id="vinabook-chat-panel"
+  class="chat-panel"
+  *ngIf="open"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="chat-title"
+>
+  <header class="chat-header">
+    <div class="chat-brand">
+      <span class="chat-avatar" aria-hidden="true">
+        <lucide-icon name="book-open" [size]="19"></lucide-icon>
+      </span>
+      <div class="chat-id">
+        <strong id="chat-title">Trợ lý VinaBook</strong>
+        <small>Tư vấn từ catalog và chính sách cửa hàng</small>
+      </div>
+    </div>
+
+    <div class="chat-actions">
+      <button
+        type="button"
+        class="new-chat-button"
+        (click)="startNewConversation()"
+        aria-label="Tạo cuộc trò chuyện mới"
+        title="Tạo cuộc trò chuyện mới"
+      >
+        <lucide-icon name="plus" [size]="17"></lucide-icon>
+        <span>Mới</span>
+      </button>
+      <button type="button" (click)="toggle()" aria-label="Đóng trợ lý" title="Đóng">
+        <lucide-icon name="x" [size]="19"></lucide-icon>
+      </button>
+    </div>
+  </header>
+
+  <button *ngIf="purchase as p" type="button" class="draft-bar" (click)="checkoutExpanded = !checkoutExpanded"
+    [attr.aria-expanded]="checkoutExpanded" aria-controls="chat-order-draft">
+    <span><strong>{{ p.product.name }}</strong><small>{{ p.form.quantity }} cuốn · {{ p.quote ? 'Chờ bạn xác nhận' : 'Đang bổ sung giao hàng' }}</small></span>
+    <span>{{ checkoutExpanded ? 'Thu gọn' : 'Xem bản nháp' }}</span>
+  </button>
+
+  <div class="chat-body" #scrollBody aria-live="polite" aria-relevant="additions">
+    <div
+      *ngFor="let msg of messages; let isLast = last; trackBy: trackByIndex"
+      class="msg-row"
+      [class.from-user]="msg.from === 'user'"
+    >
+      <div class="assistant-mark" *ngIf="msg.from === 'bot'" aria-hidden="true">
+        <lucide-icon name="book-open" [size]="15"></lucide-icon>
+      </div>
+
+      <div class="message-content">
+        <div class="bubble" [class.user]="msg.from === 'user'">
+          <p class="bubble-text">{{ bubbleText(msg) }}<span class="stream-caret" *ngIf="msg.streaming" aria-hidden="true"></span></p>
+          <div class="comparison-scroll" *ngIf="comparisonRows(msg).length" tabindex="0" aria-label="Bảng so sánh sách, có thể cuộn ngang">
+            <table><thead><tr><th *ngFor="let cell of comparisonRows(msg)[0]" scope="col">{{ cell }}</th></tr></thead>
+              <tbody><tr *ngFor="let row of comparisonRows(msg).slice(1)"><td *ngFor="let cell of row">{{ cell }}</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <span class="answer-mode" *ngIf="msg.from === 'bot' && msg.fallback">
+          Chế độ cơ bản
+        </span>
+
+        <div class="bot-products" *ngIf="msg.products?.length && (msg.intent !== 'PURCHASE' || msg.products!.length > 1)">
+          <article class="bot-product" *ngFor="let p of msg.products">
+            <span class="product-cover">
+              <img [src]="p.image" [alt]="'Bìa sách ' + p.name" loading="lazy" />
+            </span>
+            <span class="bp-info">
+              <span class="bp-name">{{ p.name }}</span>
+              <span class="bp-author">{{ p.author }}</span>
+              <span class="bp-price">
+                {{ p.price | number:'1.0-0' }}đ
+                <small *ngIf="p.discount > 0">Giảm {{ p.discount }}%</small>
+              </span>
+            </span>
+            <span class="bp-actions">
+              <button type="button" (click)="openProduct(p)">Xem sách</button>
+              <button type="button" class="primary" [disabled]="purchase?.busy || purchase?.uncertain || typing || p.quantity < 1" (click)="beginPurchase(p, 1, !!purchase)">{{ purchase ? 'Chọn cuốn này' : 'Mua ngay' }}</button>
+              <button
+                type="button"
+                class="primary"
+                *ngIf="actionFor(msg, p.id, 'ADD_TO_CART') as addAction"
+                [disabled]="typing"
+                (click)="runAction(addAction, msg)"
+              >{{ addAction.label }}</button>
+            </span>
+          </article>
+        </div>
+
+        <div class="inline-confirm" *ngIf="pendingAction?.message === msg">
+          <span>{{ pendingAction?.action?.label }}<ng-container *ngIf="pendingAction?.product"> — “{{ pendingAction?.product?.name }}”</ng-container>?</span>
+          <div>
+            <button type="button" class="primary" (click)="confirmAddToCart()">Đồng ý</button>
+            <button type="button" (click)="cancelAction()">Hủy</button>
+          </div>
+        </div>
+
+        <div class="message-actions" *ngIf="genericActions(msg).length">
+          <button type="button" *ngFor="let action of genericActions(msg)" (click)="runAction(action, msg)">
+            {{ action.label }}
+          </button>
+        </div>
+
+        <div class="answer-feedback" *ngIf="msg.from === 'bot' && msg.messageId && !msg.streaming">
+          <span>{{ msg.feedback ? 'Đã ghi nhận' : 'Câu trả lời hữu ích?' }}</span>
+          <button type="button" [class.selected]="msg.feedback === 'positive'" [disabled]="!!msg.feedback" (click)="sendFeedback(msg, 'positive')" aria-label="Câu trả lời hữu ích">👍</button>
+          <button type="button" [class.selected]="msg.feedback === 'negative'" [disabled]="!!msg.feedback" (click)="sendFeedback(msg, 'negative')" aria-label="Câu trả lời chưa hữu ích">👎</button>
+        </div>
+
+        <div class="bot-chips" *ngIf="msg.chips?.length && isLast && !typing">
+          <button type="button" class="chip" *ngFor="let c of msg.chips" (click)="send(c)">
+            {{ c }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section id="chat-order-draft" class="chat-checkout" *ngIf="checkoutExpanded && purchase as p" aria-label="Bản nháp đơn hàng">
+      <h3>Bản nháp · {{ p.product.name }}</h3>
+      <p>Chưa đặt hàng. Thanh toán khi nhận hàng (COD).</p>
+      <div *ngIf="p.addresses.length > 1">
+        <p>Bạn muốn giao đến địa chỉ nào?</p>
+        <button type="button" *ngFor="let address of p.addresses; let i = index" (click)="selectShipping(address)" [disabled]="p.busy">
+          {{ i + 1 }}. {{ address.label }} · {{ address.name }} · {{ address.street }}
+        </button>
+        <button type="button" (click)="p.addresses = []">Dùng địa chỉ khác</button>
+      </div>
+      <form *ngIf="!p.quote && p.addresses.length < 2" (ngSubmit)="prepareQuote()">
+        <p>Bạn cho mình tên, điện thoại liên hệ và địa chỉ để giao đúng nơi nhé. Điền bên dưới hoặc nhắn lần lượt trong chat. Thông tin giao hàng không gửi cho AI.</p>
+        <label>Số lượng <input type="number" name="quantity" [(ngModel)]="p.form.quantity" min="1" max="99" required [disabled]="p.busy"></label>
+        <label>Người nhận <input name="recipient" [(ngModel)]="p.form.recipient" maxlength="80" required autocomplete="name" [disabled]="p.busy"></label>
+        <label>Điện thoại <input name="phone" [(ngModel)]="p.form.phone" maxlength="10" required autocomplete="tel" inputmode="tel" [disabled]="p.busy"></label>
+        <label>Địa chỉ đầy đủ <textarea name="street" [(ngModel)]="p.form.street" maxlength="160" required autocomplete="street-address" [disabled]="p.busy"></textarea></label>
+        <button type="submit" class="primary" [disabled]="p.busy">Xem lại đơn</button>
+      </form>
+      <div *ngIf="p.quote as quote">
+        <p>{{ quote.quantity }} × {{ quote.name }} · {{ quote.unitPrice | number:'1.0-0' }}đ/cuốn</p>
+        <p>{{ quote.recipient }} · {{ quote.phone }}<br>{{ quote.street }}</p>
+        <p>Tiền sách: {{ quote.subtotal | number:'1.0-0' }}đ<br>Phí giao hàng: {{ quote.shipping | number:'1.0-0' }}đ</p>
+        <strong>Tổng thanh toán COD: {{ quote.total | number:'1.0-0' }}đ</strong>
+        <p>Kiểm tra sách và địa chỉ trước khi xác nhận. Bản nháp có hiệu lực 15 phút.</p>
+        <label class="save-address"><input type="checkbox" [(ngModel)]="p.saveAddress" [disabled]="p.busy || p.uncertain"> Lưu địa chỉ cho lần sau trên trình duyệt này (tùy chọn).</label>
+        <button type="button" (click)="editPurchase()" [disabled]="p.busy || p.uncertain">Sửa thông tin / số lượng</button>
+      </div>
+      <p *ngIf="p.busy" role="status">Đang xử lý…</p>
+      <p *ngIf="p.error" role="alert">{{ p.error }}</p>
+      <button type="button" (click)="cancelPurchase()" [disabled]="p.busy || p.uncertain">Bỏ bản nháp</button>
+    </section>
+
+    <div class="msg-row" *ngIf="showTypingDots" aria-label="Trợ lý đang trả lời">
+      <div class="assistant-mark" aria-hidden="true">
+        <lucide-icon name="book-open" [size]="15"></lucide-icon>
+      </div>
+      <div class="bubble typing"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="chat-error" *ngIf="errorText" role="alert">
+      <span>{{ errorText }}</span>
+      <button type="button" (click)="retry()">Thử lại</button>
+    </div>
+  </div>
+
+  <div class="checkout-confirm-bar" *ngIf="purchase?.quote as quote">
+    <span><small>Tổng COD · {{ quote.quantity }} cuốn</small><strong>{{ quote.total | number:'1.0-0' }}đ</strong></span>
+    <button type="button" (click)="confirmPurchase()" [disabled]="purchase?.busy || typing">{{ purchase?.uncertain ? 'Kiểm tra lại xác nhận' : 'Xác nhận đặt hàng' }}</button>
+  </div>
+
+  <footer class="chat-composer">
+    <form class="chat-input" (ngSubmit)="send()">
+      <label class="sr-only" for="chat-message">Câu hỏi cho trợ lý VinaBook</label>
+      <textarea
+        #chatInput
+        id="chat-message"
+        rows="1"
+        maxlength="1000"
+        placeholder="Hỏi về sách, giao hàng, thanh toán..."
+        [(ngModel)]="draft"
+        name="draft"
+        autocomplete="off"
+        (keydown)="onInputKeydown($event)"
+      ></textarea>
+      <button type="submit" [disabled]="!draft.trim() || typing" aria-label="Gửi câu hỏi">
+        <lucide-icon name="send" [size]="18"></lucide-icon>
+      </button>
+    </form>
+    <p>Không chia sẻ mật khẩu, mã OTP hoặc thông tin thẻ.</p>
+  </footer>
+</section>
